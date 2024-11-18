@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inventory Tracker</title>
+    
+    <!-- <link rel="icon" href="Assets/fav_new.png" type="image/gif" sizes="16x16"> -->
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="top-menu">
+        <div class="main-section">
+            <h3>
+                <a target="_blank" href="https://docs.google.com/document/d/e/2PACX-1vQCGCjnzq3r5VeYaMeqrpVkrt3rqfF6XoSp7t-z4hHkDi5sFaein0wyeY0s4hiHNrxJFdATtpOjyGXG/pub">Inventory Tracker</a>
+            </h3>
+
+            <!-- <input type="file" id="file-upload"> -->
+            <!-- <button type="button" id="upload-button" class="upload-button" onclick="fetchUploadedData()" disabled>Upload TSV</button> -->
+            
+            <button type="button" class="extract-button" onclick="">Refresh</button>
+        </div>
+        <div class="sub-section">
+            <button type="button" id="generate-button" onclick="" disabled>Save Changes</button>
+        </div>
+    </div>
+
+    <div class="selection-container">
+        <div class="selection-content data-table">
+            <div class="selection-header">
+                <input type="text" id="search-bar" placeholder="Search...">
+                <div id="dataPagination" class="pagination"></div>
+            </div>
+            <div id="dataScroll" class="table-scroll">
+                <table id="acDataTable">
+                    <tr>
+                        <th><input class="cb" type="checkbox"></th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Location</th>
+                      </tr>
+                      <tr>
+                        <td><input class="cb" type="checkbox"></td>
+                        <td>00001</td>
+                        <td>Folding Table</td>
+                        <td>Furniture</td>
+                        <td>10</td>
+                        <td>Pieces</td>
+                        <td>Storage Room A</td>
+                      </tr>
+                      <tr>
+                        <td><input class="cb" type="checkbox"></td>
+                        <td>00002</td>
+                        <td>Monoblock Chair</td>
+                        <td>Furniture</td>
+                        <td>15</td>
+                        <td>Pieces</td>
+                        <td>Storage Room B</td>
+                      </tr>
+                </table>
+            </div>
+        </div>
+        <div class="selection-content select-table">
+            <div class="table-scroll">
+                <table id="selectedTable"></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="preview-container">
+        <div class="preview-bar">
+            <h3>Preview</h4>
+        </div>
+        <div class="preview-scroll">
+            <div id="bookCardFormat"></div>
+        </div>
+    </div> -->
+
+    <!-- <div id="loading-screen">
+        <div>Loading...</div>
+    </div> -->
+
+    <!-- <script src="html2pdf.bundle.min.js"></script> -->
+
+    <script src="main.js"></script>
+</body>
+
+</html>
