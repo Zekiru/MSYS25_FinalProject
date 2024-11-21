@@ -226,6 +226,7 @@ table {
 table td, table th {
     text-align: left;
     padding: 0.4vmax;
+    padding-left: 1.4vmax;
 }
 
 table tr {background-color: #fff;}
@@ -440,4 +441,53 @@ tr:hover td.x {color: #000000;}
 #bookCardFormat .flex-row {
     display: flex;
     flex-flow: row;
+}
+
+/* Overlay for darkened background */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 999;
+}
+
+/* Pop-up Styling (adjusted) */
+#popup {
+    position: fixed;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 1000;
+    width: 33%;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+}
+
+#popup ul{
+    text-align: left;
+    list-style: none;
+    line-height: 2vmax;
+}
+
+#popup button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#popup button:hover {
+    background: #d32f2f;
 }
