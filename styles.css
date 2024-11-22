@@ -148,7 +148,7 @@ button[disabled], input[disabled] {
 }
 
 .data-table {
-    width: 80%;
+    width: 100%;
 }
 .select-table {
     margin-left: 1.4%;

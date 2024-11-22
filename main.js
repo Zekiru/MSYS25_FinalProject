@@ -1,36 +1,21 @@
-// Link to extract TSV Data from the Accession Record Spreadsheet:
-// let link = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmt-87iRLXJNLyqg8B-3yjFRU84N2MxI3ekjSW3cn8JiR7E27gXrfalm8kmF__LQ/pub?gid=1587574773&single=true&output=tsv";
-
 const loadingScreen = document.getElementById('loading-screen');
 
 const generateButton = document.getElementById('generate-button');
-const dataTable = document.getElementById('acDataTable');
+const dataTable = document.getElementById('dataTable');
 const selectTable = document.getElementById('selectedTable');
 const dataPagination = document.getElementById('dataPagination');
 const selectPagination = document.getElementById('selectedPagination');
 const searchInput = document.getElementById('search-bar');
 
-const dataHeaders = ['Acession number', 'Class', 'Author', 'Title of the Book'];
-const headerText = ['ACC NO', 'CALL NO', 'AUTHOR', 'TITLE']; 
+const headerText = ['Status', 'ID', 'Name', 'Category', 'Quantity', 'Unit', 'Location']; 
 
 let bookObjects = [];
-let currentBookObjects = [];
-let currentBookSelect = [];
+let currentItemObjects = [];
+let currentItemSelect = [];
 
 
 const maxPages = 12;
 
-
-// let selectMode = true;
-
-// Enable Drag-Selection:
-// let mouse_active = false;
-// document.addEventListener('mouseup', () => {
-//     mouse_active = false;
-// });
-// document.addEventListener('mousedown', () => {
-//     mouse_active = true;
-// });
 
 // Search Implementation:
 searchInput.addEventListener('input', function() {
@@ -46,25 +31,23 @@ searchInput.addEventListener('input', function() {
         return status;
     });
 
-    loadTable(new Pagination(searchFilter, 200).getCurrentItems(1));
+    // loadTable(new Pagination(searchFilter, 200).getCurrentItems(1));
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Starting Local Fetch Prompt:
-    // fetchLocalData();
-
+    // Initialization
     popUp()
 });
 
 
-class Book {
+class Item {
     constructor(json) {
         this.data = json;
         this.id = json[dataHeaders[0]];
         this.selected = false;
     }
 
-    getBookRow() {
+    getItemRow() {
         const tr = document.createElement('tr');
         const td = document.createElement('td');
         const cb = document.createElement('input');
@@ -111,8 +94,8 @@ class Book {
     }
 
     toggleSelect(active) {
-        if (active && !currentBookSelect.includes(this) && currentBookSelect.length < maxPages) {
-            if (currentBookSelect.length == 0) {
+        if (active && !currentItemSelect.includes(this) && currentItemSelect.length < maxPages) {
+            if (currentItemSelect.length == 0) {
                 loadBackPage(true);
             }
 
@@ -120,7 +103,7 @@ class Book {
 
             this.toggleDataTable(active);
 
-            currentBookSelect.push(this);
+            currentItemSelect.push(this);
 
             const tr = document.createElement('tr');
             const td = document.createElement('td');
@@ -140,30 +123,30 @@ class Book {
 
             selectTable.insertBefore(tr, selectTable.firstChild);
 
-            loadBookCard(this.data);
+            loadItemCard(this.data);
         }
         
-        if (!active && currentBookSelect.includes(this)) {
+        if (!active && currentItemSelect.includes(this)) {
             this.selected = active;
 
             this.toggleDataTable(active);
 
-            currentBookSelect.splice(currentBookSelect.indexOf(this), 1);
+            currentItemSelect.splice(currentItemSelect.indexOf(this), 1);
 
             selectTable.removeChild(document.getElementById(this.id));
 
             document.getElementById('bookCardFormat').removeChild(document.getElementById(this.data[dataHeaders[0]]));
 
-            if (currentBookSelect.length == 0) {
+            if (currentItemSelect.length == 0) {
                 loadBackPage(false);
             }
         }
 
         /* // Sorted Selected Table (Slow Performance):
 
-        currentBookSelect = currentBookSelect.sort(function(a, b){return a.id - b.id});
+        currentItemSelect = currentItemSelect.sort(function(a, b){return a.id - b.id});
 
-        currentBookSelect.forEach((book) => {
+        currentItemSelect.forEach((book) => {
             const tr = document.createElement('tr');
             const td = document.createElement('td');
 
@@ -178,15 +161,12 @@ class Book {
             selectTable.appendChild(tr);
         }); */
 
-        if (currentBookSelect.length == 0 || currentBookSelect.length > maxPages) {
-            generateButton.setAttribute('disabled', '');
-        } else if (generateButton.hasAttribute('disabled')) {
-            generateButton.removeAttribute('disabled')
-        }
+        // if (currentItemSelect.length == 0 || currentItemSelect.length > maxPages) {
+        //     generateButton.setAttribute('disabled', '');
+        // } else if (generateButton.hasAttribute('disabled')) {
+        //     generateButton.removeAttribute('disabled')
+        // }
 
-        selectHeader();
-
-        selectAll(false);
     }
 }
 
@@ -239,9 +219,9 @@ function loadTable(objects) {
 
     document.getElementById('dataScroll').scrollTop = 0;
 
-    currentBookObjects = [];
+    currentItemObjects = [];
     objects.forEach((book) => {
-        currentBookObjects.push(book);
+        currentItemObjects.push(book);
     })
 
     // Display Column Headers:
@@ -270,81 +250,14 @@ function loadTable(objects) {
 
     // Display Data:
     objects.forEach((book) => {
-        dataTable.appendChild(book.getBookRow());
+        dataTable.appendChild(book.getItemRow());
     })
 
     selectAll(false);
 }
 
-function selectHeader() {
-    if (selectTable.querySelector('#selectTH')) {
-        selectTable.removeChild(document.getElementById('selectTH'));
-    }
-
-    const tr = document.createElement('tr');
-    const th = document.createElement('th');
-    const th2 = document.createElement('th');
-    tr.setAttribute('id', 'selectTH');
-    th2.setAttribute('class', 'selectHeader x');
-    th.innerText = 'SELECTED (' + currentBookSelect.length + ')';
-    th2.innerText = '✕';
-    tr.appendChild(th);
-    th2.addEventListener('click', () => {
-        selectNone();
-        selectHeader();
-    });
-    if (currentBookSelect.length != 0) tr.appendChild(th2);
-    selectTable.insertBefore(tr, selectTable.firstChild);
-}
-
-function selectAll(change) {
-    let allSelect = false;
-    const cb = document.getElementById('selectAll');
-
-    currentBookObjects.forEach((book) => {
-        if (!book.selected) allSelect = true;
-    })
-
-    if (!change) {
-        if (currentBookSelect.length >= maxPages) {
-            cb.setAttribute("checked", "");
-            return;
-        }
-
-        if (allSelect || currentBookObjects.length == 0) {
-            cb.removeAttribute("checked");
-        } else {
-            cb.setAttribute("checked", "");
-        }
-
-        return;
-    }
-
-    if (allSelect && currentBookSelect.length < maxPages) {
-        cb.setAttribute("checked", "");
-
-        currentBookObjects.forEach((book) => {
-            book.toggleSelect(true);
-        })
-    } else {
-        cb.removeAttribute("checked");
-
-        currentBookObjects.forEach((book) => {
-            book.toggleSelect(false);
-        })
-    }
-}
-
-function selectNone() {
-    while (currentBookSelect.length != 0) {
-        currentBookSelect.forEach((book) => {
-            book.toggleSelect(false);
-        })
-    }
-}
-
 function popUp() {
-    const table = document.getElementById("acDataTable");
+    const table = document.getElementById("dataTable");
 
     // Create the overlay
     const overlay = document.createElement("div");
@@ -397,33 +310,33 @@ function popUp() {
 
 
 // Data Fetching:
-async function fetchLocalData() {
-    loadingScreen.style.display = 'flex';
+// async function fetchLocalData() {
+//     loadingScreen.style.display = 'flex';
 
-    await fetch('ar_data.json')
-    .then((response) => response.json())
-    .then((json) => {
-        bookObjects = [];
-        selectNone();
+//     await fetch('ar_data.json')
+//     .then((response) => response.json())
+//     .then((json) => {
+//         bookObjects = [];
+//         selectNone();
 
-        json.forEach((book) => {
-            if (book[dataHeaders[0]] != '') {
-                bookObjects.push(new Book(book));
-            }
-        })
+//         json.forEach((book) => {
+//             if (book[dataHeaders[0]] != '') {
+//                 bookObjects.push(new Item(book));
+//             }
+//         })
 
-        bookObjects = bookObjects.sort(function(a, b){return a.id - b.id});
+//         bookObjects = bookObjects.sort(function(a, b){return a.id - b.id});
 
-        loadTable(new Pagination(bookObjects, 200).getCurrentItems(1));
-    })
-    .catch(error => {
-        fetchError("Local", error);
-    });
+//         loadTable(new Pagination(bookObjects, 200).getCurrentItems(1));
+//     })
+//     .catch(error => {
+//         fetchError("Local", error);
+//     });
 
-    document.getElementById('search-bar').value = '';
+//     document.getElementById('search-bar').value = '';
 
-    loadingScreen.style.display = 'none';
-}
+//     loadingScreen.style.display = 'none';
+// }
 
 // async function fetchRemoteData() {
 //     loadingScreen.style.display = 'flex';
@@ -505,11 +418,11 @@ async function fetchLocalData() {
 //     }
 // }
 
-function fetchError(type, error) {
-    console.log(type + " Data Fetch Error: " + error);
+// function fetchError(type, error) {
+//     console.log(type + " Data Fetch Error: " + error);
     
-    if (type != "Local") fetchLocalData();
-}
+//     if (type != "Local") fetchLocalData();
+// }
 
 // function tsvToJSON(tsv) {
 //     const lines = tsv.split('\n');
@@ -535,7 +448,7 @@ function fetchError(type, error) {
 // }
 
 // async function generatePDF() {
-//     if (currentBookSelect.length == 0 || currentBookSelect.length > maxPages) {return}
+//     if (currentItemSelect.length == 0 || currentItemSelect.length > maxPages) {return}
 
 //     const element = document.getElementById('bookCardFormat');
     
@@ -560,7 +473,7 @@ function fetchError(type, error) {
 //     loadingScreen.style.display = 'none';
 // }
 
-// function loadBookCard(book) {
+// function loadItemCard(book) {
 
 //     const bookCardFormat = document.getElementById('bookCardFormat');
 
