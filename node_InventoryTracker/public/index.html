@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Inventory Tracker</title>
+    
+    <!-- <link rel="icon" href="Assets/fav_new.png" type="image/gif" sizes="16x16"> -->
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="top-menu">
+        <div class="main-section">
+            <h2>
+                <a target="_blank" href="https://docs.google.com/document/d/e/2PACX-1vQCGCjnzq3r5VeYaMeqrpVkrt3rqfF6XoSp7t-z4hHkDi5sFaein0wyeY0s4hiHNrxJFdATtpOjyGXG/pub">Inventory Tracker</a>
+            </h2>
+            
+            <a class="headLink" href="">Username</a>
+            <a class="headLink" href="">Log Out</a>
+            <a class="headLink" href="">Manage Accounts</a>
+        </div>
+        <div class="sub-section">
+            <button type="button" id="addItemButton" onclick="">+</button>
+        </div>
+    </div>
+
+    <div class="selection-container">
+        <div class="selection-content data-table">
+            <div class="selection-header">
+                <input type="text" id="search-bar" placeholder="Search...">
+                <div id="dataPagination" class="pagination"></div>
+            </div>
+            <div id="dataScroll" class="table-scroll">
+                <table id="dataTable">
+                    <thead id="rowHeader">
+                        <th>Status</th>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Location</th>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div id="loading-screen">
+        <div>Loading...</div>
+    </div> -->
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
