@@ -1,7 +1,7 @@
 html, body {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 1vmax;
-    margin: 1vh 4vw;
+    font-size: 1.2vmax;
+    margin: 2vh 4vw;
     /* background-color: #f5f5f5; */
 }
 
@@ -75,6 +75,10 @@ button[disabled], input[disabled] {
     margin: auto;
 }
 
+.main-section {
+    margin: auto 3vw auto 1vw;
+}
+
 .top-menu {
     position: relative;
     display: flex;
@@ -86,6 +90,11 @@ button[disabled], input[disabled] {
     margin-bottom: 1vmax;
     justify-content: center;
     flex-wrap: nowrap;
+}
+
+.headLink {
+    color: #0044a3;
+    margin: auto 1.2vw;
 }
 
 .main-section {
@@ -103,26 +112,34 @@ button[disabled], input[disabled] {
     height: 100%;
 }
 
-.main-section h3 {
+.main-section h2 {
     width: auto;
     margin: auto auto auto 0;
+    font-size: 1.5vmax;
 }
 
-.main-section h3 a:hover {
+.main-section h2 a:hover {
     color: #1c54a5;
 }
 
-.main-section h3 a {
+.main-section h2 a {
     color: #081b35;
     text-decoration: none;
 }
 
-.sub-section button {
+#addItemButton {
+    /* color: #37b343; */
     font-size: 5vh;
     font-weight: bold;
     margin: auto 0;
     width: 100%;
     height: 80%;
+}
+
+#addItemButton:hover {
+    color: #fff;
+    background-color: #49de58;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2), 0 1px 4px 0 rgba(0, 0, 0, 0.19);
 }
 
 .selection-container {
@@ -166,8 +183,8 @@ button[disabled], input[disabled] {
 #search-bar {
     width: 50%;
     height: 60%;
-    padding: 0 0.8vh;
-    font-size: 2.2vh;
+    padding: 0 1vh;
+    font-size: 2.4vh;
     margin: auto 1vw;
     /* background-color: #000000; */
     border: 1px solid #dadada;
@@ -254,7 +271,7 @@ table th {
 table td, .selectHeader {
     cursor: pointer;
     padding: 1vh;
-    font-size: 2vh;
+    font-size: 2.2vh;
 }
 
 #selectedTable th {
@@ -356,19 +373,20 @@ tr:hover td.x {color: #000000;}
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: none;
     z-index: 1000;
-    width: 50vmax;
+    width: 80vmin;
     text-align: center;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 10px;
-    font-size: 1.2rem;
+    font-size: 1.2vmax;
 }
 
 #popup ul {
     text-align: left;
     list-style: none;
     line-height: 2vmax;
+    padding: 0px 4vh;
 }
 
 #popup p {
@@ -377,6 +395,10 @@ tr:hover td.x {color: #000000;}
 }
 
 /* Button Styling */
+#popup button {
+    font-size: 2vh;
+}
+
 #updateButton {
     margin: 10px;
     padding: 2vh 4vw;

@@ -7,7 +7,7 @@ const dataPagination = document.getElementById('dataPagination');
 const selectPagination = document.getElementById('selectedPagination');
 const searchInput = document.getElementById('search-bar');
 
-const headerText = ['Status', 'ID', 'Name', 'Category', 'Quantity', 'Unit', 'Location']; 
+const headerText = ['Status', 'Name', 'Quantity', 'Location']; 
 
 let bookObjects = [];
 let currentItemObjects = [];
