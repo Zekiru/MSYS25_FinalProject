@@ -36,7 +36,7 @@ searchInput.addEventListener('input', function() {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialization
-    popUp()
+    enablePopUp()
 });
 
 
@@ -256,7 +256,7 @@ function loadTable(objects) {
     selectAll(false);
 }
 
-function popUp() {
+function enablePopUp() {
     const table = document.getElementById("dataTable");
 
     // Create the overlay
@@ -269,19 +269,31 @@ function popUp() {
     popup.id = "popup";
     document.body.appendChild(popup);
 
+    // Create buttons with unique IDs
     const closeButton = document.createElement("button");
+    closeButton.id = "closeButton";
     closeButton.textContent = "Close";
-    popup.appendChild(closeButton);
 
-    // Close pop-up and overlay on button click
+    const updateButton = document.createElement("button");
+    updateButton.id = "updateButton";
+    updateButton.textContent = "Update";
+
+    const deleteButton = document.createElement("button");
+    deleteButton.id = "deleteButton";
+    deleteButton.textContent = "Delete";
+
+    // Append buttons to the pop-up
+    popup.appendChild(closeButton);
+    popup.appendChild(updateButton);
+    popup.appendChild(deleteButton);
+
+    // Close pop-up and overlay
     closeButton.addEventListener("click", () => {
-        popup.style.display = "none";
-        overlay.style.display = "none";
+        clodePopUp()
     });
 
     overlay.addEventListener("click", () => {
-        popup.style.display = "none";
-        overlay.style.display = "none";
+        clodePopUp()
     });
 
     // Show pop-up with data on row click
@@ -293,16 +305,43 @@ function popUp() {
             popup.innerHTML = `
                 <h2>${details[1]}</h2>
                 <ul>
+                    <li><b>${details[0]}</b></li>
                     <li>${details[2]}</li>
-                    <li>${details[3]} ${details[4]}</li>
-                    <li>${details[5]}</li>
+                    <li>${details[3]}</li>
                 </ul>
+                <h4>Description</h4>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
             `;
-            popup.appendChild(closeButton); // Re-add the close button
+            popup.appendChild(updateButton); // Re-add buttons
+            popup.appendChild(deleteButton);
+            popup.appendChild(closeButton);
+
             popup.style.display = "block";
             overlay.style.display = "block";
+
+            // Attach action logic for buttons
+            attachButtonListeners(details[0]); // Pass unique identifier (e.g., item ID)
         }
     });
+
+    function clodePopUp() {
+        popup.style.display = "none";
+        overlay.style.display = "none";
+    }
+
+    function attachButtonListeners(itemId) {
+        updateButton.onclick = () => {
+            alert(`Update feature for Item ID: ${itemId} coming soon!`);
+        };
+
+        deleteButton.onclick = () => {
+            const confirmDelete = confirm(`Are you sure you want to delete Item ID: ${itemId}?`);
+            if (confirmDelete) {
+                alert(`Item ID: ${itemId} deleted successfully!`);
+                clodePopUp()
+            }
+        };
+    }   
 }
 
 
