@@ -37,182 +37,157 @@ searchInput.addEventListener('input', function() {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialization
     loadTable()
-    enablePopUp()
+    enableCRUD()
+    enablePopUpActions(); // Enable popup buttons
 });
 
 
-class Item {
-    constructor(json) {
-        this.data = json;
-        this.id = json[dataHeaders[0]];
-        this.selected = false;
-    }
+// class Item {
+//     constructor(json) {
+//         this.data = json;
+//         this.id = json[dataHeaders[0]];
+//         this.selected = false;
+//     }
 
-    getItemRow() {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        const cb = document.createElement('input');
-        cb.setAttribute('type', 'checkbox');
-        cb.setAttribute('class', 'cb');
+//     getItemRow() {
+//         const tr = document.createElement('tr');
+//         const td = document.createElement('td');
+//         const cb = document.createElement('input');
+//         cb.setAttribute('type', 'checkbox');
+//         cb.setAttribute('class', 'cb');
 
-        td.appendChild(cb);
-        tr.appendChild(td);
+//         td.appendChild(cb);
+//         tr.appendChild(td);
 
-        dataHeaders.forEach((key) => {
-            const td = document.createElement('td');
-            td.textContent = this.data[[key]];
-            tr.appendChild(td);
-        })
+//         dataHeaders.forEach((key) => {
+//             const td = document.createElement('td');
+//             td.textContent = this.data[[key]];
+//             tr.appendChild(td);
+//         })
 
-        tr.addEventListener("mousedown", () => {
-            selectMode = ((tr.hasAttribute("checked") ? false : true));
-            this.toggleSelect(selectMode);
-        });
+//         tr.addEventListener("mousedown", () => {
+//             selectMode = ((tr.hasAttribute("checked") ? false : true));
+//             this.toggleSelect(selectMode);
+//         });
 
-        tr.addEventListener("mouseenter", () => {
-            if (!mouse_active) {return};
-            this.toggleSelect(selectMode);
-        });
+//         tr.addEventListener("mouseenter", () => {
+//             if (!mouse_active) {return};
+//             this.toggleSelect(selectMode);
+//         });
 
-        this.tr = tr;
-        this.cb = cb;
+//         this.tr = tr;
+//         this.cb = cb;
 
-        if (this.selected) this.toggleDataTable(true);
+//         if (this.selected) this.toggleDataTable(true);
 
-        return tr;
-    }
+//         return tr;
+//     }
 
-    toggleDataTable(active) {
-        if (active && !this.tr.hasAttribute('checked')) {
-            this.tr.setAttribute("checked", "");
-            this.cb.setAttribute("checked", "");
-        } 
+//     toggleDataTable(active) {
+//         if (active && !this.tr.hasAttribute('checked')) {
+//             this.tr.setAttribute("checked", "");
+//             this.cb.setAttribute("checked", "");
+//         } 
         
-        if (!active && this.tr.hasAttribute('checked')) {
-            this.tr.removeAttribute("checked");
-            this.cb.removeAttribute("checked");
-        }
-    }
+//         if (!active && this.tr.hasAttribute('checked')) {
+//             this.tr.removeAttribute("checked");
+//             this.cb.removeAttribute("checked");
+//         }
+//     }
 
-    toggleSelect(active) {
-        if (active && !currentItemSelect.includes(this) && currentItemSelect.length < maxPages) {
-            if (currentItemSelect.length == 0) {
-                loadBackPage(true);
-            }
+//     toggleSelect(active) {
+//         if (active && !currentItemSelect.includes(this) && currentItemSelect.length < maxPages) {
+//             if (currentItemSelect.length == 0) {
+//                 loadBackPage(true);
+//             }
 
-            this.selected = active;
+//             this.selected = active;
 
-            this.toggleDataTable(active);
+//             this.toggleDataTable(active);
 
-            currentItemSelect.push(this);
+//             currentItemSelect.push(this);
 
-            const tr = document.createElement('tr');
-            const td = document.createElement('td');
-            const td2 = document.createElement('td');
+//             const tr = document.createElement('tr');
+//             const td = document.createElement('td');
+//             const td2 = document.createElement('td');
 
-            tr.setAttribute('id', this.id)
-            td2.setAttribute('class', 'x')
+//             tr.setAttribute('id', this.id)
+//             td2.setAttribute('class', 'x')
 
-            td.innerText = this.id + " - " + this.data[dataHeaders[3]];
-            td2.innerText = '✕';
-            tr.appendChild(td);
-            tr.appendChild(td2);
+//             td.innerText = this.id + " - " + this.data[dataHeaders[3]];
+//             td2.innerText = '✕';
+//             tr.appendChild(td);
+//             tr.appendChild(td2);
 
-            tr.addEventListener('click', () => {
-                this.toggleSelect(false);
-            });
+//             tr.addEventListener('click', () => {
+//                 this.toggleSelect(false);
+//             });
 
-            selectTable.insertBefore(tr, selectTable.firstChild);
+//             selectTable.insertBefore(tr, selectTable.firstChild);
 
-            loadItemCard(this.data);
-        }
+//             loadItemCard(this.data);
+//         }
         
-        if (!active && currentItemSelect.includes(this)) {
-            this.selected = active;
+//         if (!active && currentItemSelect.includes(this)) {
+//             this.selected = active;
 
-            this.toggleDataTable(active);
+//             this.toggleDataTable(active);
 
-            currentItemSelect.splice(currentItemSelect.indexOf(this), 1);
+//             currentItemSelect.splice(currentItemSelect.indexOf(this), 1);
 
-            selectTable.removeChild(document.getElementById(this.id));
+//             selectTable.removeChild(document.getElementById(this.id));
 
-            document.getElementById('bookCardFormat').removeChild(document.getElementById(this.data[dataHeaders[0]]));
+//             document.getElementById('bookCardFormat').removeChild(document.getElementById(this.data[dataHeaders[0]]));
 
-            if (currentItemSelect.length == 0) {
-                loadBackPage(false);
-            }
-        }
+//             if (currentItemSelect.length == 0) {
+//                 loadBackPage(false);
+//             }
+//         }
+//     }
+// }
 
-        /* // Sorted Selected Table (Slow Performance):
+// class Pagination {
+//     constructor(obj, itemsPerPage) {
+//         this.obj = obj;
+//         this.itemsPerPage = itemsPerPage;
+//         this.totalPages = Math.ceil(obj.length / itemsPerPage);
+//     }
 
-        currentItemSelect = currentItemSelect.sort(function(a, b){return a.id - b.id});
+//     getTotalPages() {
+//         return this.totalPages;
+//     }
 
-        currentItemSelect.forEach((book) => {
-            const tr = document.createElement('tr');
-            const td = document.createElement('td');
+//     getCurrentItems(currentPage) {
+//         this.startIndex = (currentPage - 1) * this.itemsPerPage;
+//         this.endIndex = this.startIndex + this.itemsPerPage;
+//         this.currentItems = this.obj.slice(this.startIndex, this.endIndex);
 
-            tr.setAttribute('id', book.id)
-            td.innerText = book.id + " - " + book.data[dataHeaders[3]]
-            tr.appendChild(td);
-
-            tr.addEventListener('click', () => {
-                this.toggleSelect(false);
-            });
-
-            selectTable.appendChild(tr);
-        }); */
-
-        // if (currentItemSelect.length == 0 || currentItemSelect.length > maxPages) {
-        //     generateButton.setAttribute('disabled', '');
-        // } else if (generateButton.hasAttribute('disabled')) {
-        //     generateButton.removeAttribute('disabled')
-        // }
-
-    }
-}
-
-class Pagination {
-    constructor(obj, itemsPerPage) {
-        this.obj = obj;
-        this.itemsPerPage = itemsPerPage;
-        this.totalPages = Math.ceil(obj.length / itemsPerPage);
-    }
-
-    getTotalPages() {
-        return this.totalPages;
-    }
-
-    getCurrentItems(currentPage) {
-        this.startIndex = (currentPage - 1) * this.itemsPerPage;
-        this.endIndex = this.startIndex + this.itemsPerPage;
-        this.currentItems = this.obj.slice(this.startIndex, this.endIndex);
-
-        dataPagination.innerHTML = '';
+//         dataPagination.innerHTML = '';
         
-        for (let i = 1; this.totalPages >= i; i++) {
-            const firstItem = (i - 1) * this.itemsPerPage + 1;
-            const lastItem = this.obj.slice(firstItem - 1, firstItem - 1 + this.itemsPerPage).length + (firstItem - 1);
+//         for (let i = 1; this.totalPages >= i; i++) {
+//             const firstItem = (i - 1) * this.itemsPerPage + 1;
+//             const lastItem = this.obj.slice(firstItem - 1, firstItem - 1 + this.itemsPerPage).length + (firstItem - 1);
 
-            const p = document.createElement('p');
+//             const p = document.createElement('p');
             
-            if (firstItem == lastItem) {p.innerText = firstItem} 
-            else {p.innerText = firstItem + "-" + lastItem};
+//             if (firstItem == lastItem) {p.innerText = firstItem} 
+//             else {p.innerText = firstItem + "-" + lastItem};
 
-            if (i == currentPage) {
-                p.setAttribute('current-page', '');
-            }
+//             if (i == currentPage) {
+//                 p.setAttribute('current-page', '');
+//             }
 
-            p.addEventListener('click', () => {
-                loadTable(this.getCurrentItems(i));
-                selectAll(false);
-            })
+//             p.addEventListener('click', () => {
+//                 loadTable(this.getCurrentItems(i));
+//                 selectAll(false);
+//             })
 
-            dataPagination.appendChild(p);
-        }
+//             dataPagination.appendChild(p);
+//         }
 
-        return this.currentItems;
-    }
-}
+//         return this.currentItems;
+//     }
+// }
 
 
 function loadTable() {
@@ -220,36 +195,36 @@ function loadTable() {
     fetch('/api/inventory')
         .then(response => response.json())
         .then(data => {
-            // Get the table body element where data will be inserted
             const tableBody = document.querySelector('#dataTable tbody');
-            
-            // Clear any existing rows (optional)
-            tableBody.innerHTML = '';
+            tableBody.innerHTML = ''; // Clear existing rows
 
-            // Loop through the fetched data and add rows to the table
             data.forEach(item => {
                 const row = document.createElement('tr');
                 row.setAttribute('class', item.id);
-                
-                // Create table data cells and append to the row
+
                 const statusCell = document.createElement('td');
-                statusCell.textContent = item.status.toUpperCase();  // Assuming your table has 'status'
+                statusCell.textContent = item.status.toUpperCase();
                 row.appendChild(statusCell);
 
                 const nameCell = document.createElement('td');
-                nameCell.textContent = item.name;  // Assuming your table has 'name'
+                nameCell.textContent = item.name;
                 row.appendChild(nameCell);
 
                 const quantityCell = document.createElement('td');
-                quantityCell.textContent = item.quantity;  // Assuming your table has 'quantity'
+                quantityCell.textContent = item.quantity;
                 row.appendChild(quantityCell);
 
                 const locationCell = document.createElement('td');
-                locationCell.textContent = item.location;  // Assuming your table has 'location'
+                locationCell.textContent = item.location;
                 row.appendChild(locationCell);
 
-                // Append the row to the table
                 tableBody.appendChild(row);
+
+                // Add event listener for clicking a row
+                row.addEventListener('click', () => {
+                    loadItemCard(item); // Populate the popup
+                    showPopUp(popup);    // Show the popup
+                });
             });
         })
         .catch(error => {
@@ -257,90 +232,127 @@ function loadTable() {
         });
 }
 
-function enablePopUp() {
-    const table = document.getElementById("dataTable");
+function loadItemCard(item) {
+    // Populate the popup with the clicked item data
+    document.querySelector("#popup h2").textContent = item.name;
+    document.getElementById("itemDetails").innerHTML = `
+        <li><b>Status:</b> ${item.status.toUpperCase()}</li>
+        <li><b>Quantity:</b> ${item.quantity}</li>
+        <li><b>Location:</b> ${item.location}</li>
+    `;
+    document.getElementById("description").textContent = item.description;
 
-    // Create the overlay
-    const overlay = document.createElement("div");
-    overlay.id = "overlay";
-    document.body.appendChild(overlay);
+    // Store item ID for future use (e.g., updating or deleting)
+    popup.dataset.itemId = item.id;
+}
 
-    // Create the pop-up
-    const popup = document.createElement("div");
-    popup.id = "popup";
-    document.body.appendChild(popup);
+function showPopUp(element) {
+    document.getElementById("overlay").style.display = "block";
+    element.style.display = "block";
+}
 
-    // Create buttons with unique IDs
-    const closeButton = document.createElement("button");
-    closeButton.id = "closeButton";
-    closeButton.textContent = "Close";
+function closePopUp(element) {
+    element.style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+}
 
-    const updateButton = document.createElement("button");
-    updateButton.id = "updateButton";
-    updateButton.textContent = "Update";
+// Enable buttons in the pop-up for updating, deleting, and closing
+function enablePopUpActions() {
+    const updateButton = document.getElementById("updateButton");
+    const deleteButton = document.getElementById("deleteButton");
+    const closeButton = document.getElementById("closeButton");
 
-    const deleteButton = document.createElement("button");
-    deleteButton.id = "deleteButton";
-    deleteButton.textContent = "Delete";
+    // Update item action
+    updateButton.addEventListener('click', () => {
+        const itemId = popup.dataset.itemId;
+        if (!itemId) return;
 
-    // Append buttons to the pop-up
-    popup.appendChild(closeButton);
-    popup.appendChild(updateButton);
-    popup.appendChild(deleteButton);
-
-    // Close pop-up and overlay
-    closeButton.addEventListener("click", () => {
-        clodePopUp()
+        // Logic to update item (for example, redirect to edit page or open a form)
+        console.log(`Updating item with ID: ${itemId}`);
+        closePopUp(popup); // Close popup after updating (or after redirect)
     });
 
-    overlay.addEventListener("click", () => {
-        clodePopUp()
+    // Delete item action
+    deleteButton.addEventListener('click', () => {
+        const itemId = popup.dataset.itemId;
+        if (!itemId) return;
+
+        // Send delete request to the server
+        fetch(`/api/delete-item/${itemId}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Item deleted:', data);
+                loadTable(); // Reload the table to reflect the changes
+                closePopUp(popup); // Close the popup after deleting
+            })
+            .catch(error => {
+                console.error('Error deleting item:', error);
+            });
     });
 
-    // Show pop-up with data on row click
-    table.addEventListener("click", (e) => {
-        const row = e.target.closest("tr");
-        if (row && row.rowIndex !== 0) { // Skip header row
-            const details = Array.from(row.children).map(cell => cell.textContent);
+    // Close pop-up action
+    closeButton.addEventListener('click', () => {
+        closePopUp(popup); // Close the popup without any action
+    });
+}
 
-            popup.innerHTML = `
-                <h2>${details[1]}</h2>
-                <ul>
-                    <li><b>${details[0]}</b></li>
-                    <li>${details[2]}</li>
-                    <li>${details[3]}</li>
-                </ul>
-                <h4>Description</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-            `;
-            popup.appendChild(updateButton); // Re-add buttons
-            popup.appendChild(deleteButton);
-            popup.appendChild(closeButton);
+// Enable Add Item functionality
+function enableCRUD() {
+    const addItemButton = document.getElementById("addItemButton");
+    const addItemPopup = document.getElementById("addItemPopup");
+    const addCloseButton = document.getElementById("addCloseButton");
+    const addItemForm = document.getElementById("addItemForm");
 
-            popup.style.display = "block";
-            overlay.style.display = "block";
-
-            // Attach action logic for buttons
-            attachButtonListeners(details[0]); // Pass unique identifier (e.g., item ID)
-        }
+    // Show Add Item pop-up
+    addItemButton.addEventListener("click", () => {
+        showPopUp(addItemPopup);
     });
 
-    function clodePopUp() {
-        popup.style.display = "none";
-        overlay.style.display = "none";
-    }
+    // Close Add Item pop-up
+    addCloseButton.addEventListener("click", () => {
+        closePopUp(addItemPopup);
+    });
 
-    function attachButtonListeners(itemId) {
-        updateButton.onclick = () => {
-            alert(`Update feature for Item ID: ${itemId} coming soon!`);
+    // Handle Add Item form submission
+    addItemForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+    
+        const itemName = document.getElementById("itemName").value;
+        const itemStatus = document.getElementById("itemStatus").value;
+        const itemQuantity = document.getElementById("itemQuantity").value;
+        const itemDescription = document.getElementById("itemDescription").value;
+        const itemLocation = document.getElementById("itemLocation").value;
+    
+        const itemData = {
+            name: itemName,
+            status: itemStatus,
+            quantity: itemQuantity,
+            description: itemDescription,
+            location: itemLocation
         };
-
-        deleteButton.onclick = () => {
-            const confirmDelete = confirm(`Are you sure you want to delete Item ID: ${itemId}?`);
-            if (confirmDelete) {
-                alert(`Item ID: ${itemId} deleted successfully!`);
-                clodePopUp()
+    
+        // Send POST request to add the item
+        fetch('/api/add-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(itemData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Item added:', data);
+                loadTable(); // Reload the table after adding
+                closePopUp(addItemPopup); // Close the popup
+                addItemForm.reset(); // Reset the form fields
+            } else {
+                console.error('Error adding item:', data.message);
             }
-        };
-    }   
+        })
+        .catch(error => {
+            console.error('Error adding item:', error);
+        });
+    });
+    
 }

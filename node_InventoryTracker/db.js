@@ -1,39 +1,52 @@
 const mysql = require('mysql2');
 
-// Create a connection to the database
-const connection = mysql.createConnection({
+// Create a MySQL connection pool
+const pool = mysql.createPool({
   host: 'localhost',
-  user: 'root',  // Replace with your database username
-  password: '',  // Replace with your database password
-  database: 'inventorytracker'  // Replace with your database name
+  user: 'root',         // Replace with your MySQL username
+  password: '',         // Replace with your MySQL password
+  database: 'inventorytracker',  // Replace with your database name
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-// Function to fetch all items from the 'inventory' table
+// Function to execute queries and return the results
+function executeQuery(query, params = [], callback) {
+  pool.execute(query, params, (err, results) => {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, results);
+  });
+}
+
+// Fetch all inventory items
 function getInventoryItems(callback) {
-  connection.query('SELECT * FROM inventory', (err, results) => {
-    if (err) {
-      console.error('Error fetching data from database:', err);
-      callback(err, null);
-    } else {
-      callback(null, results);
-    }
-  });
+  executeQuery('SELECT * FROM inventory', [], callback);
 }
 
-// Function to fetch a specific item by its ID
+// Fetch a specific item by ID
 function getItemById(itemId, callback) {
-  connection.query('SELECT * FROM inventory WHERE id = ?', [itemId], (err, results) => {
-    if (err) {
-      console.error('Error fetching data from database:', err);
-      callback(err, null);
-    } else {
-      callback(null, results);
-    }
-  });
+  executeQuery('SELECT * FROM inventory WHERE id = ?', [itemId], callback);
 }
 
-// Export the functions so they can be used in other files
+// Add a new item to the inventory
+function createItem(newItem, callback) {
+  const { name, status, quantity, description, location } = newItem;
+  const query = 'INSERT INTO inventory (name, status, quantity, description, location) VALUES (?, ?, ?, ?, ?)';
+
+  executeQuery(query, [name, status, quantity, description, location], callback);
+}
+
+// Delete an item from the inventory
+function deleteItem(itemId, callback) {
+  executeQuery('DELETE FROM inventory WHERE id = ?', [itemId], callback);
+}
+
 module.exports = {
   getInventoryItems,
-  getItemById
+  getItemById,
+  createItem,
+  deleteItem
 };
