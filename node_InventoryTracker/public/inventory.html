@@ -5,12 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Inventory Tracker</title>
-    
     <!-- <link rel="icon" href="Assets/fav_new.png" type="image/gif" sizes="16x16"> -->
-
     <link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
     <div class="top-menu">
         <div class="main-section">
@@ -18,12 +15,12 @@
                 <a target="_blank" href="">Inventory Tracker</a>
             </h2>
             
-            <button class="headLink">Username</button>
-            <button id="logoutButton" class="headLink">Logout</button>
-            <button class="headLink">Manage Accounts</button>
+            <h3 id="username"></h3>
+            <a id="logoutButton" class="headLink">Logout</a>
+            <a class="headLink">Manage Accounts</a>
         </div>
         <div class="sub-section">
-            <button type="button" id="addItemButton" onclick="">+</button>
+            <button type="button" id="addItemButton" onclick="">Create Item</button>
         </div>
     </div>
 
@@ -47,10 +44,6 @@
         </div>
     </div>
 
-    <!-- <div id="loading-screen">
-        <div>Loading...</div>
-    </div> -->
-
     <div id="overlay" style="display: none;"></div>
 
     <!-- Pop-up for viewing/updating/deleting items -->
@@ -63,13 +56,7 @@
                 <li>Location</li>
             </ul>
             <h4>Description</h4>
-            <p id="description">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
-                qui officia deserunt mollit anim id est laborum.
-            </p>
+            <p id="description"></p>
             <button id="updateButton">Update</button>
             <button id="deleteButton">Delete</button>
             <button id="closeButton">Close</button>
@@ -103,5 +90,4 @@
 
     <script src="js/inventory.js"></script>
 </body>
-
 </html>

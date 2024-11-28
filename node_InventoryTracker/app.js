@@ -1,16 +1,16 @@
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
-
 const db = require('./db');
 const app = express();
 const path = require('path');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Configure session middleware
+require('dotenv').config();
+
 app.use(session({
-  secret: 'your-secret-key', // Replace with a secure secret
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
 }));
@@ -119,6 +119,27 @@ function isAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
+app.get('/api/user-info', (req, res) => {
+  if (!req.session.userId) {
+      return res.status(401).json({ message: 'Not logged in' });
+  }
+
+  // Assuming you store the username in the session or fetch it from the database
+  db.getUserById(req.session.userId, (err, user) => {
+      if (err) {
+          console.error('Error fetching user info:', err);
+          return res.status(500).json({ message: 'Server error' });
+      }
+
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+
+      res.json({ username: user.username });
+  });
+});
+
+
 
 // Temporary route to check session
 app.get('/test-session', (req, res) => {
@@ -158,6 +179,24 @@ app.get('/api/inventory', isAuthenticated, (req, res) => {
       return res.status(500).send('Error fetching data');
     }
     res.json(items);
+  });
+});
+
+// Route to search inventory items by name (partial match)
+app.get('/api/search-items', (req, res) => {
+  const { query } = req.query; // Get search term from query parameter
+
+  if (!query) {
+    return res.status(400).json({ success: false, message: 'Query parameter is required' });
+  }
+
+  db.searchItemsByName(query, (err, items) => {
+    if (err) {
+      console.error('Error searching items:', err);
+      return res.status(500).send('Error searching items');
+    }
+
+    res.json(items); // Send matching items as a JSON response
   });
 });
 
