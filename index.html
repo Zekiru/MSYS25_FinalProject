@@ -15,12 +15,12 @@
     <div class="top-menu">
         <div class="main-section">
             <h2>
-                <a target="_blank" href="https://docs.google.com/document/d/e/2PACX-1vQCGCjnzq3r5VeYaMeqrpVkrt3rqfF6XoSp7t-z4hHkDi5sFaein0wyeY0s4hiHNrxJFdATtpOjyGXG/pub">Inventory Tracker</a>
+                <a target="_blank" href="">Inventory Tracker</a>
             </h2>
             
-            <a class="headLink" href="">Zekiruu</a>
-            <a class="headLink" href="">Log Out</a>
-            <a class="headLink" href="">Manage Accounts</a>
+            <button class="headLink">Username</button>
+            <button id="logoutButton" class="headLink">Logout</button>
+            <button class="headLink">Manage Accounts</button>
         </div>
         <div class="sub-section">
             <button type="button" id="addItemButton" onclick="">+</button>
@@ -35,36 +35,13 @@
             </div>
             <div id="dataScroll" class="table-scroll">
                 <table id="dataTable">
-                    <tr id="rowHeader">
+                    <thead id="rowHeader">
                         <th>Status</th>
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Location</th>
-                    </tr>
-                    <tr id="00001">
-                    <td>AVAILABLE</td>
-                    <td>Folding Table</td>
-                    <td>10 Pieces</td>
-                    <td>Storage Room A</td>
-                    </tr>
-                    <tr id="00002">
-                    <td>IN-USE</td>
-                    <td>Electric Fan</td>
-                    <td>7 Pieces</td>
-                    <td>Storage Room B</td>
-                    </tr>
-                    <tr id="00003">
-                    <td>DAMAGED</td>
-                    <td>Spotlight</td>
-                    <td>5 Pieces</td>
-                    <td>Storage Room C</td>
-                    </tr>
-                    <tr id="00004">
-                    <td>N/A</td>
-                    <td>Monoblock Chair</td>
-                    <td>15 Pieces</td>
-                    <td>Storage Room D</td>
-                    </tr>
+                    </thead>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
@@ -73,6 +50,56 @@
     <!-- <div id="loading-screen">
         <div>Loading...</div>
     </div> -->
+
+    <div id="overlay" style="display: none;"></div>
+
+    <!-- Pop-up for viewing/updating/deleting items -->
+    <div id="popup" style="display: none;">
+        <div id="popup-content">
+            <h2>Item Name</h2>
+            <ul id="itemDetails">
+                <li><b>Status</b></li>
+                <li>Quantity</li>
+                <li>Location</li>
+            </ul>
+            <h4>Description</h4>
+            <p id="description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
+                qui officia deserunt mollit anim id est laborum.
+            </p>
+            <button id="updateButton">Update</button>
+            <button id="deleteButton">Delete</button>
+            <button id="closeButton">Close</button>
+        </div>
+    </div>
+
+    <!-- Pop-up for adding items -->
+    <div id="addItemPopup" style="display: none;">
+        <div id="addItemContent">
+            <h2>Add New Item</h2>
+            <form id="addItemForm">
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" name="itemName" required>
+                <label for="itemStatus">Status:</label>
+                <select id="itemStatus" name="itemStatus" required>
+                    <option value="available">Available</option>
+                    <option value="in-use">In-Use</option>
+                    <option value="n/a">N/A</option>
+                </select>
+                <label for="itemQuantity">Quantity:</label>
+                <input type="number" id="itemQuantity" name="itemQuantity" min="1" required>
+                <label for="itemDescription">Description:</label>
+                <textarea id="itemDescription" name="itemDescription" class="description-input" placeholder="Enter description here..."></textarea>
+                <label for="itemLocation">Location:</label>
+                <input type="text" id="itemLocation" name="itemLocation" required>
+                <button type="submit">Add Item</button>
+                <button type="button" id="addCloseButton">Cancel</button>
+            </form>
+        </div>
+    </div>
 
     <script src="main.js"></script>
 </body>
