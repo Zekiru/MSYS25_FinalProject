@@ -116,10 +116,23 @@ function LoadTable(data) {
 }
 
 function LoadItemCard(item) {
+    let color = '';
+
+    switch(item.status) {
+        case 'available':
+            color = 'green';
+            break;
+        case 'in-use':
+            color = 'red';
+            break;
+        default:
+            break;
+    }
+
     // Populate the popup with the clicked item data
     document.querySelector("#popup h2").textContent = item.name;
     document.getElementById("itemDetails").innerHTML = `
-        <li><b>Status:</b> ${item.status.toUpperCase()}</li>
+        <li><h3 class="${color}">${item.status.toUpperCase()}</h3></li>
         <li><b>Quantity:</b> ${item.quantity}</li>
         <li><b>Location:</b> ${item.location}</li>
     `;
