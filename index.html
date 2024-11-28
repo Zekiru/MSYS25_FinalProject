@@ -1,29 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
+<!-- saved from url=(0031)http://localhost:3000/inventory -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Inventory Tracker</title>
-    
     <!-- <link rel="icon" href="Assets/fav_new.png" type="image/gif" sizes="16x16"> -->
-
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
     <div class="top-menu">
         <div class="main-section">
             <h2>
-                <a target="_blank" href="">Inventory Tracker</a>
+                <a target="_blank" href="http://localhost:3000/inventory">Inventory Tracker</a>
             </h2>
             
-            <button class="headLink">Username</button>
-            <button id="logoutButton" class="headLink">Logout</button>
-            <button class="headLink">Manage Accounts</button>
+            <h3 id="username">testuser</h3>
+            <a id="logoutButton" class="headLink">Logout</a>
+            <a class="headLink">Manage Accounts</a>
         </div>
         <div class="sub-section">
-            <button type="button" id="addItemButton" onclick="">+</button>
+            <button type="button" id="addItemButton" onclick="">Create Item</button>
         </div>
     </div>
 
@@ -36,20 +32,16 @@
             <div id="dataScroll" class="table-scroll">
                 <table id="dataTable">
                     <thead id="rowHeader">
-                        <th>Status</th>
+                        <tr><th>Status</th>
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Location</th>
-                    </thead>
-                    <tbody></tbody>
+                    </tr></thead>
+                    <tbody><tr><td class="green">AVAILABLE</td><td>Foldable Table</td><td>15</td><td>Storage Room A</td></tr><tr><td class="green">AVAILABLE</td><td>Desk Chair</td><td>15</td><td>Storage Room A</td></tr><tr><td class="red">IN-USE</td><td>Projector</td><td>3</td><td>Conference Room B</td></tr><tr><td>N/A</td><td>Laptop</td><td>2</td><td>Tech Department</td></tr><tr><td class="green">AVAILABLE</td><td>Whiteboard</td><td>10</td><td>Meeting Room 1</td></tr><tr><td class="red">IN-USE</td><td>Printer</td><td>5</td><td>Office Area 2</td></tr><tr><td>N/A</td><td>Air Conditioner</td><td>7</td><td>Main Office</td></tr><tr><td class="green">AVAILABLE</td><td>Office Supplies</td><td>50</td><td>Storage Room C</td></tr><tr><td class="red">IN-USE</td><td>Microwave</td><td>1</td><td>Break Room</td></tr><tr><td class="red">IN-USE</td><td>Smartphone</td><td>8</td><td>Reception</td></tr><tr><td class="green">AVAILABLE</td><td>Office Desk</td><td>12</td><td>Office 1</td></tr><tr><td class="red">IN-USE</td><td>Laptop Charger</td><td>5</td><td>Tech Department</td></tr><tr><td>N/A</td><td>Speaker System</td><td>2</td><td>Main Hall</td></tr><tr><td class="green">AVAILABLE</td><td>Whiteboard Marker</td><td>100</td><td>Storage Room A</td></tr><tr><td class="red">IN-USE</td><td>Projector Screen</td><td>3</td><td>Conference Room B</td></tr><tr><td>N/A</td><td>Coffee Maker</td><td>1</td><td>Break Room</td></tr><tr><td class="green">AVAILABLE</td><td>Storage Box</td><td>30</td><td>Warehouse</td></tr><tr><td class="red">IN-USE</td><td>Air Conditioning Unit</td><td>4</td><td>Tech Room</td></tr><tr><td>N/A</td><td>Cables</td><td>50</td><td>Supply Room</td></tr><tr><td class="green">AVAILABLE</td><td>Smartphone Stand</td><td>25</td><td>Reception</td></tr><tr><td class="red">IN-USE</td><td>HD Camera</td><td>3</td><td>Meeting Room 2</td></tr><tr><td>N/A</td><td>Microwave Oven</td><td>1</td><td>Kitchen Area</td></tr><tr><td class="green">AVAILABLE</td><td>Printer Paper</td><td>500</td><td>Storage Room B</td></tr><tr><td class="red">IN-USE</td><td>Desktop Monitor</td><td>6</td><td>Tech Department</td></tr><tr><td>N/A</td><td>Kitchen Utensils</td><td>10</td><td>Kitchen</td></tr><tr><td class="green">AVAILABLE</td><td>Extension Cord</td><td>15</td><td>Supply Room</td></tr><tr><td class="red">IN-USE</td><td>Conference Speaker</td><td>2</td><td>Conference Room A</td></tr><tr><td>N/A</td><td>Coffee Cups</td><td>20</td><td>Break Room</td></tr><tr><td class="green">AVAILABLE</td><td>Filing Cabinet</td><td>8</td><td>Office 2</td></tr><tr><td class="red">IN-USE</td><td>WIFI Router</td><td>1</td><td>Server Room</td></tr><tr><td class="red">IN-USE</td><td>Wood Chair</td><td>3</td><td>CTC 506</td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
-
-    <!-- <div id="loading-screen">
-        <div>Loading...</div>
-    </div> -->
 
     <div id="overlay" style="display: none;"></div>
 
@@ -63,13 +55,7 @@
                 <li>Location</li>
             </ul>
             <h4>Description</h4>
-            <p id="description">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
-                qui officia deserunt mollit anim id est laborum.
-            </p>
+            <p id="description"></p>
             <button id="updateButton">Update</button>
             <button id="deleteButton">Delete</button>
             <button id="closeButton">Close</button>
@@ -82,26 +68,25 @@
             <h2>Add New Item</h2>
             <form id="addItemForm">
                 <label for="itemName">Item Name:</label>
-                <input type="text" id="itemName" name="itemName" required>
+                <input type="text" id="itemName" name="itemName" required="">
                 <label for="itemStatus">Status:</label>
-                <select id="itemStatus" name="itemStatus" required>
+                <select id="itemStatus" name="itemStatus" required="">
                     <option value="available">Available</option>
                     <option value="in-use">In-Use</option>
                     <option value="n/a">N/A</option>
                 </select>
                 <label for="itemQuantity">Quantity:</label>
-                <input type="number" id="itemQuantity" name="itemQuantity" min="1" required>
+                <input type="number" id="itemQuantity" name="itemQuantity" min="1" required="">
                 <label for="itemDescription">Description:</label>
                 <textarea id="itemDescription" name="itemDescription" class="description-input" placeholder="Enter description here..."></textarea>
                 <label for="itemLocation">Location:</label>
-                <input type="text" id="itemLocation" name="itemLocation" required>
+                <input type="text" id="itemLocation" name="itemLocation" required="">
                 <button type="submit">Add Item</button>
                 <button type="button" id="addCloseButton">Cancel</button>
             </form>
         </div>
     </div>
 
-    <script src="main.js"></script>
-</body>
+    <!-- <script src="inventory.js"></script> -->
 
-</html>
+<iframe id="G8IWkYU4" frameborder="0" src="./Inventory Tracker_files/translateSandbox.html" style="width: 0px; height: 0px; display: none;"></iframe></body></html>

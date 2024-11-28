@@ -1,1 +1,1 @@
-# MSYS25_FinalProject
+# Inventory Tracker - Static Preview
