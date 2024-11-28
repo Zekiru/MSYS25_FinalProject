@@ -41,6 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
     enablePopUpActions(); // Enable popup buttons
 });
 
+document.getElementById('logoutButton').addEventListener('click', async () => {
+    const response = await fetch('/logout', { method: 'POST' });
+    if (response.ok) {
+      window.location.href = '/';
+    } else {
+      alert('Logout failed');
+    }
+});
+
 
 // class Item {
 //     constructor(json) {
@@ -198,34 +207,38 @@ function loadTable() {
             const tableBody = document.querySelector('#dataTable tbody');
             tableBody.innerHTML = ''; // Clear existing rows
 
-            data.forEach(item => {
-                const row = document.createElement('tr');
-                row.setAttribute('class', item.id);
-
-                const statusCell = document.createElement('td');
-                statusCell.textContent = item.status.toUpperCase();
-                row.appendChild(statusCell);
-
-                const nameCell = document.createElement('td');
-                nameCell.textContent = item.name;
-                row.appendChild(nameCell);
-
-                const quantityCell = document.createElement('td');
-                quantityCell.textContent = item.quantity;
-                row.appendChild(quantityCell);
-
-                const locationCell = document.createElement('td');
-                locationCell.textContent = item.location;
-                row.appendChild(locationCell);
-
-                tableBody.appendChild(row);
-
-                // Add event listener for clicking a row
-                row.addEventListener('click', () => {
-                    loadItemCard(item); // Populate the popup
-                    showPopUp(popup);    // Show the popup
+            try {
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.setAttribute('class', item.id);
+    
+                    const statusCell = document.createElement('td');
+                    statusCell.textContent = item.status.toUpperCase();
+                    row.appendChild(statusCell);
+    
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = item.name;
+                    row.appendChild(nameCell);
+    
+                    const quantityCell = document.createElement('td');
+                    quantityCell.textContent = item.quantity;
+                    row.appendChild(quantityCell);
+    
+                    const locationCell = document.createElement('td');
+                    locationCell.textContent = item.location;
+                    row.appendChild(locationCell);
+    
+                    tableBody.appendChild(row);
+    
+                    // Add event listener for clicking a row
+                    row.addEventListener('click', () => {
+                        loadItemCard(item); // Populate the popup
+                        showPopUp(popup);    // Show the popup
+                    });
                 });
-            });
+            } catch(err) {
+                return
+            }
         })
         .catch(error => {
             console.error('Error fetching data:', error);

@@ -44,9 +44,30 @@ function deleteItem(itemId, callback) {
   executeQuery('DELETE FROM inventory WHERE id = ?', [itemId], callback);
 }
 
+function createUser(username, hashedPassword, callback) {
+  const query = 'INSERT INTO users (username, password) VALUES (?, ?)';
+  executeQuery(query, [username, hashedPassword], callback);
+}
+
+// Fetch a user by username
+function getUserByUsername(username, callback) {
+  executeQuery('SELECT * FROM users WHERE username = ?', [username], callback);
+}
+
+// Add a new user (e.g., for registration)
+function addUser(newUser, callback) {
+  const { username, hashedPassword } = newUser;
+  const query = 'INSERT INTO users (username, password) VALUES (?, ?)';
+
+  executeQuery(query, [username, hashedPassword], callback);
+}
+
 module.exports = {
   getInventoryItems,
   getItemById,
   createItem,
-  deleteItem
+  deleteItem,
+  createUser,
+  getUserByUsername,
+  addUser
 };

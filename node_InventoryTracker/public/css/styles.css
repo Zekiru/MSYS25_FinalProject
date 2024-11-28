@@ -244,7 +244,8 @@ form input, form textarea, #itemStatus {
 }
 
 .description-input {
-    height: 100px;  
+    height: 100px;
+    resize: vertical;  
 }
 
 /* Media Queries */
