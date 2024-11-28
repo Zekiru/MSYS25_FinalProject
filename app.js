@@ -15,10 +15,8 @@ app.use(session({
   saveUninitialized: false,
 }));
 
-// Serve static files (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Show login page if user is not logged in
 app.get('/', (req, res) => {
   if (req.session.userId) {
     return res.redirect('/inventory');
@@ -26,12 +24,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/login.html'));
 });
 
-// Show inventory page if user is logged in
 app.get('/inventory', isAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, 'public/inventory.html'));
 });
 
-// Redirect to login if trying to access inventory without logging in
 app.get('/login', (req, res) => {
   res.redirect('/');
 });
