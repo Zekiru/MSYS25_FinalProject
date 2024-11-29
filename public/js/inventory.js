@@ -2,10 +2,10 @@ const searchInput = document.getElementById('search-bar');
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialization
-    UpdateTable();
-    UpdateUsername();
-    EnableCRUD();
-    EnablePopUpActions();
+    updateTable();
+    updateUsername();
+    enableAddItems();
+    enablePopUpActions();
 });
 
 document.getElementById('logoutButton').addEventListener('click', async () => {
@@ -19,10 +19,10 @@ document.getElementById('logoutButton').addEventListener('click', async () => {
 
 // Search Implementation:
 searchInput.addEventListener('input', function() {
-    UpdateTable();
+    updateTable();
 });
 
-function UpdateUsername() {
+function updateUsername() {
     fetch('/api/user-info')
         .then(response => {
             if (!response.ok) {
@@ -41,14 +41,14 @@ function UpdateUsername() {
         });
 }
 
-function UpdateTable() {
+function updateTable() {
     const input = searchInput.value;
 
     if (input.length < 3) { // Only search if at least 3 characters are entered
         fetch('/api/inventory')
             .then(response => response.json())
             .then(data => {
-                LoadTable(data);
+                loadTable(data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -60,14 +60,14 @@ function UpdateTable() {
     fetch(`/api/search-items?query=${input}`)
         .then(response => response.json())
         .then(data => {
-            LoadTable(data)
+            loadTable(data)
         })
         .catch(error => {
             console.error('Error fetching search results:', error);
         });
 }
 
-function LoadTable(data) {
+function loadTable(data) {
     const tableBody = document.querySelector('#dataTable tbody');
     tableBody.innerHTML = ''; // Clear existing rows
 
@@ -106,8 +106,8 @@ function LoadTable(data) {
 
             // Add event listener for clicking a row
             row.addEventListener('click', () => {
-                LoadItemCard(item); // Populate the popup
-                ShowPopUp(popup);    // Show the popup
+                loadItemCard(item); // Populate the popup
+                showPopUp(popup);    // Show the popup
             });
         });
     } catch(err) {
@@ -115,7 +115,7 @@ function LoadTable(data) {
     }
 }
 
-function LoadItemCard(item) {
+function loadItemCard(item) {
     let color = '';
 
     switch(item.status) {
@@ -142,18 +142,90 @@ function LoadItemCard(item) {
     popup.dataset.itemId = item.id;
 }
 
-function ShowPopUp(element) {
+function showPopUp(element) {
     document.getElementById("overlay").style.display = "block";
     element.style.display = "block";
 }
 
-function ClosePopUp(element) {
+function closePopUp(element) {
     element.style.display = "none";
     document.getElementById("overlay").style.display = "none";
 }
 
+
+
+function deleteItem(itemId) {
+    const confirmDelete = confirm('Are you sure you want to delete this item?');
+  
+    if (confirmDelete) {
+        // Proceed with the delete request if confirmed
+        fetch(`/api/delete-item/${itemId}`, {
+        method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+        if (data.success) {
+            // alert(data.message);
+            updateTable();
+            closePopUp(popup);
+        } else {
+        alert('Failed to delete item');
+        }
+        })
+        .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting the item');
+        });
+    } else {
+        console.log('Item deletion cancelled.');
+    }
+}
+
+function addItem() {
+    const itemName = document.getElementById("itemName").value;
+    const itemStatus = document.getElementById("itemStatus").value;
+    const itemQuantity = document.getElementById("itemQuantity").value;
+    const itemDescription = document.getElementById("itemDescription").value;
+    const itemLocation = document.getElementById("itemLocation").value;
+
+    const itemData = {
+        name: itemName,
+        status: itemStatus,
+        quantity: itemQuantity,
+        description: itemDescription,
+        location: itemLocation
+    };
+
+    // Send POST request to add the item
+    fetch('/api/add-item', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(itemData),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                // Alert the user with the error message
+                alert(data.message);
+                return;
+            }
+        // alert(data.message);
+        updateTable(); // Reload the table after adding
+        closePopUp(addItemPopup); // Close the popup
+        addItemForm.reset(); // Reset the form fields
+    })
+    .catch(error => {
+        console.error('Error adding item:', error);
+        alert('An error occurred while adding the item.');
+    });
+}
+
+
+
 // Enable buttons in the pop-up for updating, deleting, and closing
-function EnablePopUpActions() {
+function enablePopUpActions() {
     const updateButton = document.getElementById("updateButton");
     const deleteButton = document.getElementById("deleteButton");
     const closeButton = document.getElementById("closeButton");
@@ -165,7 +237,7 @@ function EnablePopUpActions() {
 
         // Logic to update item (for example, redirect to edit page or open a form)
         console.log(`Updating item with ID: ${itemId}`);
-        ClosePopUp(popup); // Close popup after updating (or after redirect)
+        closePopUp(popup); // Close popup after updating (or after redirect)
     });
 
     // Delete item action
@@ -173,27 +245,17 @@ function EnablePopUpActions() {
         const itemId = popup.dataset.itemId;
         if (!itemId) return;
 
-        // Send delete request to the server
-        fetch(`/api/delete-item/${itemId}`, { method: 'DELETE' })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Item deleted:', data);
-                UpdateTable(); // Reload the table to reflect the changes
-                ClosePopUp(popup); // Close the popup after deleting
-            })
-            .catch(error => {
-                console.error('Error deleting item:', error);
-            });
+        deleteItem(itemId);
     });
 
     // Close pop-up action
     closeButton.addEventListener('click', () => {
-        ClosePopUp(popup); // Close the popup without any action
+        closePopUp(popup); // Close the popup without any action
     });
 }
 
 // Enable Add Item functionality
-function EnableCRUD() {
+function enableAddItems() {
     const addItemButton = document.getElementById("addItemButton");
     const addItemPopup = document.getElementById("addItemPopup");
     const addCloseButton = document.getElementById("addCloseButton");
@@ -201,54 +263,18 @@ function EnableCRUD() {
 
     // Show Add Item pop-up
     addItemButton.addEventListener("click", () => {
-        ShowPopUp(addItemPopup);
+        showPopUp(addItemPopup);
     });
 
     // Close Add Item pop-up
     addCloseButton.addEventListener("click", () => {
-        ClosePopUp(addItemPopup);
+        closePopUp(addItemPopup);
     });
 
     // Handle Add Item form submission
     addItemForm.addEventListener("submit", (e) => {
         e.preventDefault();
     
-        const itemName = document.getElementById("itemName").value;
-        const itemStatus = document.getElementById("itemStatus").value;
-        const itemQuantity = document.getElementById("itemQuantity").value;
-        const itemDescription = document.getElementById("itemDescription").value;
-        const itemLocation = document.getElementById("itemLocation").value;
-    
-        const itemData = {
-            name: itemName,
-            status: itemStatus,
-            quantity: itemQuantity,
-            description: itemDescription,
-            location: itemLocation
-        };
-    
-        // Send POST request to add the item
-        fetch('/api/add-item', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(itemData),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Item added:', data);
-                UpdateTable(); // Reload the table after adding
-                ClosePopUp(addItemPopup); // Close the popup
-                addItemForm.reset(); // Reset the form fields
-            } else {
-                console.error('Error adding item:', data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error adding item:', error);
-        });
+        addItem();
     });
-    
 }

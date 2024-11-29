@@ -216,14 +216,26 @@ app.post('/api/add-item', isAuthenticated, (req, res) => {
 
   const newItem = { name, status, quantity, description, location };
 
-  db.createItem(newItem, (err, result) => {
+  db.checkItemExists(name, status, location, (err, exists) => {
     if (err) {
-      console.error('Error adding item:', err);
-      return res.status(500).json({ success: false, message: 'Error adding item' });
+      console.error('Error checking for duplicates:', err);
+      return res.status(500).json({ success: false, message: 'Error checking for duplicates' });
     }
-    res.json({ success: true, message: 'Item added successfully' });
+
+    if (exists) {
+      return res.status(400).json({ success: false, message: 'Item with the same name, status, and location already exists' });
+    }
+
+    db.createItem(newItem, (err, result) => {
+      if (err) {
+        console.error('Error adding item:', err);
+        return res.status(500).json({ success: false, message: 'Error adding item' });
+      }
+      res.json({ success: true, message: 'Item added successfully' });
+    });
   });
 });
+
 
 app.delete('/api/delete-item/:id', isAuthenticated, (req, res) => {
   const itemId = req.params.id;

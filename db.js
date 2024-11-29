@@ -39,11 +39,21 @@ function getItemById(itemId, callback) {
   executeQuery('SELECT * FROM inventory WHERE id = ?', [itemId], callback);
 }
 
+// Check if an item with the same name and status exists
+function checkItemExists(name, status, location, callback) {
+  const query = 'SELECT COUNT(*) AS count FROM inventory WHERE name = ? AND status = ? AND location = ?';
+  executeQuery(query, [name, status, location], (err, results) => {
+    if (err) {
+      return callback(err);
+    }
+    callback(null, results[0].count > 0); // Return true if count > 0
+  });
+}
+
 // Add a new item to the inventory
 function createItem(newItem, callback) {
   const { name, status, quantity, description, location } = newItem;
   const query = 'INSERT INTO inventory (name, status, quantity, description, location) VALUES (?, ?, ?, ?, ?)';
-
   executeQuery(query, [name, status, quantity, description, location], callback);
 }
 
@@ -86,6 +96,7 @@ module.exports = {
   getInventoryItems,
   searchItemsByName,
   getItemById,
+  checkItemExists,
   createItem,
   deleteItem,
   getUserById,
