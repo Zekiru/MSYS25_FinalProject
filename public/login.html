@@ -3,16 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Inventory Tracker - Login</title>
+  <title>TA IMS - Login</title>
   <!-- <link rel="icon" href="Assets/fav_new.png" type="image/gif" sizes="16x16"> -->
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
-  <form id="loginForm">
-    <input type="text" name="username" placeholder="Username" required />
-    <input type="password" name="password" placeholder="Password" required />
-    <button type="submit">Login</button>
-  </form>
+  <div class="header-title">Tanghalan Ateneo</div>
+  <p>Inventory Management System (TA IMS)</p>
+  <img src="assets/images/ta_logo1.png" alt="Tanghalan Ateneo Logo" class="logo">
+  <div class="login-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" name="username" placeholder="Username" class="input-field" required />
+      <input type="password" name="password" placeholder="Password" class="input-field" required />
+      <button type="submit" class="login-button">Login</button>
+    </form>
+  </div>
   <script src="js/login.js"></script>
 </body>
 </html>

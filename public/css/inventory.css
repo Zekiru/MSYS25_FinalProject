@@ -5,6 +5,14 @@ html, body {
     padding: 0; /* Remove extra padding */
 }
 
+body {
+    background: linear-gradient(45deg, #000000 40%, #96760b 100%);
+    /* background-color: #000; */
+    background-repeat: no-repeat;
+    height: 100vh;
+    overflow: hidden;
+}
+
 #overlay {
     position: fixed;
     top: 0;
@@ -67,7 +75,7 @@ button:hover {
     align-items: center;
     justify-content: space-between;
     width: calc(100% - 8vw);  /* Match width minus the margin */
-    padding: 1rem 0;  /* Adjusted padding for consistency */
+    padding: 1.2vh 0;  /* Adjusted padding for consistency */
     /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
     margin: 1rem auto;
 }
@@ -78,11 +86,11 @@ button:hover {
 
 .main-section h2 a {
     text-decoration: none;
-    color: #081b35;
+    color: #f3f3f3;
 }
 
 .main-section h2 a:hover {
-    color: #1c54a5;
+    color: #4088ed;
 }
 
 .main-section h3, .main-section a {
@@ -95,10 +103,11 @@ button:hover {
 
 .main-section h3 {
     font-size: 1.15rem;
+    color: #f3f3f3;
 }
 
 .main-section a {
-    color: #0044a3;
+    color: #f3f3f3;
     cursor: pointer;
 }
 
@@ -144,6 +153,7 @@ button:hover {
     border-radius: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    background-color: #fff;
 }
 
 .selection-header {
@@ -151,6 +161,7 @@ button:hover {
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
+    background-color: #f3f3f3;
 }
 
 #search-bar {
@@ -207,8 +218,12 @@ table td {
     cursor: pointer;
 }
 
+table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
 table tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f3f3f3;
 }
 
 table tr:hover {

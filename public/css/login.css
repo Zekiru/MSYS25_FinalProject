@@ -1,0 +1,93 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #000000 40%, #d4af37 100%);
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+}
+p {
+    font-weight: bold;
+    color: #f3f3f3;
+    margin: 1rem 0;
+}
+.header-title {
+    color: white;
+    font-size: 36px; /* Fixed font size for the header */
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+    text-transform: uppercase;
+}
+.logo {
+    width: 80px; /* Reduced size */
+    height: auto;
+    margin-bottom: 2rem;
+    animation: glow 2s infinite alternate;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+}
+@keyframes glow {
+    from {
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+    }
+    to {
+        filter: drop-shadow(0 0 30px rgba(255, 215, 0, 1));
+    }
+}
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 80%; /* More flexible width */
+    max-width: 400px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+.login-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 24px; /* Fixed font size for login text */
+}
+.input-field,
+.login-button {
+    width: 100%;
+    max-width: 350px;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px; /* Same font size for consistency */
+    transition: all 0.3s ease;
+}
+.input-field {
+    background-color: #f9f9f9;
+}
+.input-field:focus {
+    border-color: #2575fc;
+    background-color: #fff;
+    outline: none;
+}
+.login-button {
+    background-color: #2575fc;
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+.login-button:hover {
+    background-color: #6a11cb;
+}
+.login-button:active {
+    background-color: #4a8bf3;
+}
