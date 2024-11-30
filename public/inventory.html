@@ -17,10 +17,10 @@
             
             <h3 id="username"></h3>
             <a id="logoutButton" class="headLink">Logout</a>
-            <a class="headLink">Manage Accounts</a>
+            <a id="manageAccountsButton" class="headLink">Manage Accounts</a>
         </div>
         <div class="sub-section">
-            <button type="button" id="addItemButton" onclick="">Create Item</button>
+            <button type="button" id="addItemButton" class="editButton">Create Item</button>
         </div>
     </div>
 
@@ -58,9 +58,9 @@
             <h4>Description</h4>
             <p id="description"></p>
             <div class="buttonSet">
-                <button id="updateButton">Update</button>
-                <button id="transferButton">Transfer</button>
-                <button id="deleteButton">Delete</button>
+                <button id="updateButton" class="editButton">Update</button>
+                <button id="transferButton" class="editButton">Transfer</button>
+                <button id="deleteButton" class="editButton">Delete</button>
                 <button id="closeButton">Close</button>
             </div>
         </div>
@@ -87,7 +87,7 @@
                 <label for="itemLocation">Location:</label>
                 <input type="text" id="itemLocation" name="location" required>
                 <div class="buttonSet">
-                    <button type="submit" id="formSubmitButton">Add Item</button>
+                    <button type="submit" id="formSubmitButton" class="editButton">Add Item</button>
                     <button type="button" id="formCloseButton">Cancel</button>
                 </div>
             </form>

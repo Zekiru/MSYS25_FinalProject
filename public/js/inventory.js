@@ -28,7 +28,7 @@ const overlay = document.getElementById("overlay");
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     updateTable();
-    updateUsername();
+    updateUser();
     enablePopUpActions();
     enableAddItems();
 });
@@ -41,10 +41,31 @@ logoutButton.addEventListener('click', async () => {
 
 searchInput.addEventListener('input', () => updateTable());
 
-function updateUsername() {
+function updateUser() {
     fetch('/api/user-info')
         .then(response => response.ok ? response.json() : Promise.reject('Failed to fetch user info'))
-        .then(data => usernameDisplay.textContent = data.username)
+        .then(data => {
+            usernameDisplay.textContent = data.username;
+
+            manageAccountsButton = document.getElementById('manageAccountsButton');
+            if (data.role != 'admin') {
+                manageAccountsButton.style.display = 'none';
+            } else {
+                manageAccountsButton.style.display = 'inline';
+            }
+
+            if (data.role === 'reader') {
+                const editButtons = document.getElementsByClassName('editButton');
+                for (let button of editButtons) {
+                    button.setAttribute('hidden', '');
+                }
+            } else {
+                const editButtons = document.getElementsByClassName('editButton');
+                for (let button of editButtons) {
+                    button.removeAttribute('hidden');
+                }
+            }
+        })
         .catch(error => {
             console.error(error);
             window.location.href = '/login.html';

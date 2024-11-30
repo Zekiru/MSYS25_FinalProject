@@ -307,6 +307,18 @@ form input, form textarea, #itemStatus {
     overflow-y: auto;
 }
 
+button:disabled {
+    background-color: #ccc !important;
+    color: #666 !important;
+    border: 1px solid #aaa !important;
+    cursor: not-allowed !important;
+}
+
+button:disabled:hover {
+    background-color: #ccc !important;
+    border: 1px solid #aaa !important;
+}
+
 /* Media Queries */
 @media (max-width: 768px) {
     html, body {

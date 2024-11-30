@@ -33,7 +33,7 @@ app.get('/login', (req, res) => {
 });
 
 
-app.post('/register', async (req, res) => {
+app.post('/register', isAuthenticated, checkRole(['admin']), async (req, res) => {
   const { username, password } = req.body;
 
   // Validate input
@@ -93,6 +93,7 @@ app.post('/login', (req, res) => {
     }
 
     req.session.userId = user.id;
+    req.session.role = user.role;
     res.json({ success: true, message: 'Logged in successfully' });
   });
 });
@@ -115,25 +116,38 @@ function isAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-app.get('/api/user-info', (req, res) => {
+function checkRole(allowedRoles) {
+  return (req, res, next) => {
+    const userRole = req.session.role; // Assume role is stored in the session during login
+
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({ success: false, message: 'Access forbidden: insufficient privileges' });
+    }
+    next();
+  };
+}
+
+app.get('/api/user-info', isAuthenticated, (req, res) => {
   if (!req.session.userId) {
-      return res.status(401).json({ message: 'Not logged in' });
+    return res.status(401).json({ message: 'Not logged in' });
   }
 
-  // Assuming you store the username in the session or fetch it from the database
+  // Assuming you store the username and role in the database
   db.getUserById(req.session.userId, (err, user) => {
-      if (err) {
-          console.error('Error fetching user info:', err);
-          return res.status(500).json({ message: 'Server error' });
-      }
+    if (err) {
+      console.error('Error fetching user info:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
 
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-      res.json({ username: user.username });
+    // Return the username and role in the response
+    res.json({ username: user.username, role: user.role });
   });
 });
+
 
 
 
@@ -179,7 +193,7 @@ app.get('/api/inventory', isAuthenticated, (req, res) => {
 });
 
 // Route to search inventory items by name (partial match)
-app.get('/api/search-items', (req, res) => {
+app.get('/api/search-items', isAuthenticated, (req, res) => {
   const { query } = req.query; // Get search term from query parameter
 
   if (!query) {
@@ -207,7 +221,7 @@ app.get('/api/inventory/:id', isAuthenticated, (req, res) => {
   });
 });
 
-app.post('/api/add-item', isAuthenticated, (req, res) => {
+app.post('/api/add-item', isAuthenticated, checkRole(['editor', 'admin']), (req, res) => {
   const { name, status, quantity, description, location } = req.body;
 
   if (!name || !status || !quantity || !location) {
@@ -236,7 +250,7 @@ app.post('/api/add-item', isAuthenticated, (req, res) => {
   });
 });
 
-app.put('/api/update-item/:id', isAuthenticated, (req, res) => {
+app.put('/api/update-item/:id', isAuthenticated, checkRole(['editor', 'admin']), (req, res) => {
   const itemId = req.params.id;
   const { name, status, quantity, description, location } = req.body;
 
@@ -289,7 +303,7 @@ app.put('/api/update-item/:id', isAuthenticated, (req, res) => {
 });
 
 // POST endpoint to split and transfer an item
-app.post('/api/split-transfer-item', (req, res) => {
+app.post('/api/split-transfer-item', checkRole(['editor', 'admin']), (req, res) => {
   const { originalId, newItem, transferQuantity } = req.body;
 
   // Input validation
@@ -306,7 +320,7 @@ app.post('/api/split-transfer-item', (req, res) => {
   });
 });
 
-app.delete('/api/delete-item/:id', isAuthenticated, (req, res) => {
+app.delete('/api/delete-item/:id', isAuthenticated, checkRole(['editor', 'admin']), (req, res) => {
   const itemId = req.params.id;
   db.deleteItem(itemId, (err, result) => {
     if (err) {
