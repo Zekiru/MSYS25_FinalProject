@@ -16,8 +16,8 @@
             </h2>
             
             <h3 id="username"></h3>
-            <a id="logoutButton" class="headLink">Logout</a>
-            <a id="manageAccountsButton" class="headLink">Inventory</a>
+            <a id="logoutButton" class="headLink" href="/logout">Logout</a>
+            <a id="manageAccountsButton" class="headLink" href="/inventory">Inventory</a>
         </div>
         <div class="sub-section">
             <button type="button" id="addItemButton" class="editButton">Create Item</button>
@@ -33,12 +33,23 @@
             <div id="dataScroll" class="table-scroll">
                 <table id="dataTable">
                     <thead id="rowHeader">
-                        <th>Status</th>
-                        <th>Name</th>
-                        <th>Quantity</th>
-                        <th>Location</th>
+                        <th>Role</th>
+                        <th>Username</th>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                        <tr>
+                            <td>ADMIN</td>
+                            <td>John</td>
+                        </tr>
+                        <tr>
+                            <td>EDITOR</td>
+                            <td>Pratts</td>
+                        </tr>
+                        <tr>
+                            <td>READER</td>
+                            <td>Deni</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
