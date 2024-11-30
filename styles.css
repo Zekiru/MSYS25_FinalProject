@@ -5,6 +5,14 @@ html, body {
     padding: 0; /* Remove extra padding */
 }
 
+body {
+    background: linear-gradient(45deg, #000000 40%, #96760b 100%);
+    /* background-color: #000; */
+    background-repeat: no-repeat;
+    height: 100vh;
+    overflow: hidden;
+}
+
 #overlay {
     position: fixed;
     top: 0;
@@ -14,6 +22,15 @@ html, body {
     background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
     z-index: 999; /* Make sure it's on top of other elements */
     display: none; /* Hidden by default */
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+select {
+    cursor: pointer;
 }
 
 button {
@@ -32,13 +49,13 @@ button:hover {
     color: rgb(62, 77, 78);
 }
 
-#addItemButton:hover {
+#addItemButton:hover, #updateButton:hover, #formSubmitButton:hover {
     background-color: #4ec54a;
     color: #f2f2f2;
 }
 
-#updateButton:hover {
-    background-color: #4ec54a;
+#transferButton:hover {
+    background-color: #1c25c9;
     color: #f2f2f2;
 }
 
@@ -47,7 +64,7 @@ button:hover {
     color: #f2f2f2;
 }
 
-#closeButton:hover {
+#closeButton:hover, #formCloseButton:hover {
     background-color: #2e547a;
     color: #f2f2f2;
 }
@@ -58,7 +75,7 @@ button:hover {
     align-items: center;
     justify-content: space-between;
     width: calc(100% - 8vw);  /* Match width minus the margin */
-    padding: 1rem 0;  /* Adjusted padding for consistency */
+    padding: 1.2vh 0;  /* Adjusted padding for consistency */
     /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
     margin: 1rem auto;
 }
@@ -69,11 +86,11 @@ button:hover {
 
 .main-section h2 a {
     text-decoration: none;
-    color: #081b35;
+    color: #f3f3f3;
 }
 
 .main-section h2 a:hover {
-    color: #1c54a5;
+    color: #4088ed;
 }
 
 .main-section h3, .main-section a {
@@ -86,10 +103,11 @@ button:hover {
 
 .main-section h3 {
     font-size: 1.15rem;
+    color: #f3f3f3;
 }
 
 .main-section a {
-    color: #0044a3;
+    color: #f3f3f3;
     cursor: pointer;
 }
 
@@ -102,6 +120,7 @@ button:hover {
 .headLink {
     margin-left: 1rem;
     font-size: 1.15rem;
+    text-decoration: none;
 }
 
 .sub-section {
@@ -135,6 +154,7 @@ button:hover {
     border-radius: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    background-color: #fff;
 }
 
 .selection-header {
@@ -142,6 +162,7 @@ button:hover {
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem;
+    background-color: #f3f3f3;
 }
 
 #search-bar {
@@ -198,8 +219,12 @@ table td {
     cursor: pointer;
 }
 
+table tr:nth-child(odd) {
+    background-color: #fff;
+}
+
 table tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f3f3f3;
 }
 
 table tr:hover {
@@ -214,8 +239,17 @@ table tr:hover {
     color: #b31b1b;
 }
 
+.buttonSet {
+    width: fit-content;
+    /* display: flex;
+    flex-direction: row; */
+    align-items: center;
+    padding: 0;
+    margin: 0 auto;
+}
+
 /* Pop-up Styling */
-#popup, #addItemPopup {
+#popup, #itemPopup {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -229,12 +263,12 @@ table tr:hover {
     z-index: 1000;
 }
 
-#popup h2, #addItemPopup h2 {
+#popup h2, #itemPopup h2 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
 }
 
-#popup button, #addItemPopup button {
+#popup button, #itemPopup button {
     margin: 0.5rem;
     padding: 0.5rem 1rem;
     font-size: 1rem;
@@ -259,17 +293,31 @@ form input, form textarea, #itemStatus {
     word-wrap: break-word;
     display: block;
     width: 100%;
-    min-height: 50px;
+    min-height: 0;
     height: auto;
-    max-height: none;
+    max-height: 15rem;
     overflow-x: hidden;
     overflow-y: auto;
     text-align: left;
 }
 
 .description-input {
-    height: 100px;
-    resize: vertical;  
+    min-height: 5rem;
+    max-height: 10rem;
+    resize: vertical;
+    overflow-y: auto;
+}
+
+button:disabled {
+    background-color: #ccc !important;
+    color: #666 !important;
+    border: 1px solid #aaa !important;
+    cursor: not-allowed !important;
+}
+
+button:disabled:hover {
+    background-color: #ccc !important;
+    border: 1px solid #aaa !important;
 }
 
 /* Media Queries */
