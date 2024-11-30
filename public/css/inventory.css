@@ -120,6 +120,7 @@ button:hover {
 .headLink {
     margin-left: 1rem;
     font-size: 1.15rem;
+    text-decoration: none;
 }
 
 .sub-section {

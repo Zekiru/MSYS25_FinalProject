@@ -1,4 +1,5 @@
 const mysql = require('mysql2');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 // Create a MySQL connection pool
@@ -225,18 +226,58 @@ function createUser(username, hashedPassword, callback) {
   executeQuery(query, [username, hashedPassword], callback);
 }
 
-// Fetch a user by username
 function getUserByUsername(username, callback) {
   executeQuery('SELECT * FROM users WHERE username = ?', [username], callback);
 }
 
-// Add a new user (e.g., for registration)
-function addUser(newUser, callback) {
-  const { username, hashedPassword } = newUser;
-  const query = 'INSERT INTO users (username, password) VALUES (?, ?)';
+function updateUser(userId, updatedUser, callback) {
+  const { username, password, role } = updatedUser;
+  let query = 'UPDATE users SET username = ?, role = ?';
+  const params = [username, role];
 
-  executeQuery(query, [username, hashedPassword], callback);
+  // If a password is provided, hash it and update it
+  if (password) {
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+      if (err) {
+        return callback(err);
+      }
+      query += ', password = ?';
+      params.push(hashedPassword);
+
+      query += ' WHERE id NOT IN (1, 2) AND id = ?';
+      params.push(userId);
+
+      executeQuery(query, params, callback);
+    });
+  } else {
+    query += ' WHERE id NOT IN (1, 2) AND id = ?';
+    params.push(userId);
+
+    executeQuery(query, params, callback);
+  }
 }
+
+function deleteUser(userId, callback) {
+  const query = 'DELETE FROM users WHERE id NOT IN (1, 2) AND id = ?';
+  executeQuery(query, [userId], callback);
+}
+
+function getUsers(callback) {
+  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2)';
+  executeQuery(query, [], callback);
+}
+
+function searchUsersByName(searchTerm, callback) {
+  const query = 'SELECT * FROM users WHERE id NOT IN (1, 2) AND username LIKE ?';
+  const searchQuery = `%${searchTerm}%`; // Wrap search term with '%' for partial match
+  executeQuery(query, [searchQuery], callback);
+}
+
+function getUsersByRole(filterName, callback) {
+  const query = 'SELECT * FROM users WHERE id NOT IN (1, 2) AND role = ?';
+  executeQuery(query, [filterName], callback);
+}
+
 
 module.exports = {
   getInventoryItems,
@@ -251,5 +292,9 @@ module.exports = {
   getUserById,
   createUser,
   getUserByUsername,
-  addUser
+  updateUser,
+  deleteUser,
+  getUsers,
+  searchUsersByName,
+  getUsersByRole
 };

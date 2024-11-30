@@ -32,6 +32,13 @@ app.get('/login', (req, res) => {
   res.redirect('/');
 });
 
+app.get('/manageusers', isAuthenticated, (req, res) => {
+  if (req.session.role !== 'admin') {
+    return res.redirect('/');
+  }
+  res.sendFile(path.join(__dirname, 'public/manageUsers.html'));
+});
+
 
 app.post('/register', isAuthenticated, checkRole(['admin']), async (req, res) => {
   const { username, password } = req.body;
@@ -99,13 +106,12 @@ app.post('/login', (req, res) => {
 });
 
 // Route for user logout
-app.post('/logout', (req, res) => {
-  req.session.destroy(err => {
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
     if (err) {
-      console.error('Error during logout:', err);
-      return res.status(500).send('Could not log out.');
+      return res.status(500).json({ message: 'Error logging out' });
     }
-    res.json({ success: true, message: 'Logged out successfully' });
+    res.redirect('/'); // Redirect to homepage after logging out
   });
 });
 
@@ -126,6 +132,76 @@ function checkRole(allowedRoles) {
     next();
   };
 }
+
+// Route to get all users with their roles, excluding users with IDs 1 and 2
+app.get('/api/users', isAuthenticated, checkRole(['admin']), (req, res) => {
+  db.getUsers((err, users) => {
+    if (err) {
+      console.error('Error fetching users:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+
+    // Return users with their roles only (excluding passwords)
+    res.json({ users });
+  });
+});
+
+// Route for updating user account (including role)
+app.put('/api/update-user/:id', isAuthenticated, checkRole(['admin']), (req, res) => {
+  const userId = req.params.id;
+  const { username, password, role } = req.body;
+
+  // Check if username, password, and role are provided
+  if (!username || !password || !role) {
+    return res.status(400).json({ message: 'Username, password, and role are required' });
+  }
+
+  // Validate the role
+  const validRoles = ['reader', 'editor', 'admin'];
+  if (!validRoles.includes(role)) {
+    return res.status(400).json({ message: 'Invalid role' });
+  }
+
+  // Hash the new password
+  bcrypt.hash(password, 10, (err, hashedPassword) => {
+    if (err) {
+      console.error('Error hashing password:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+
+    const updatedUser = { username, password: hashedPassword, role };
+
+    // Update the user in the database
+    db.updateUser(userId, updatedUser, (err, result) => {
+      if (err) {
+        console.error('Error updating user:', err);
+        return res.status(500).json({ message: 'Error updating user' });
+      }
+
+      res.json({ success: true, message: 'User updated successfully' });
+    });
+  });
+});
+
+// Route for deleting user account
+app.delete('/api/delete-user/:id', isAuthenticated, checkRole(['admin']), (req, res) => {
+  const userId = req.params.id;
+
+  // Ensure that the admin is not deleting their own account
+  if (req.session.userId == userId) {
+    return res.status(400).json({ message: 'Admin cannot delete their own account' });
+  }
+
+  // Delete the user from the database
+  db.deleteUser(userId, (err, result) => {
+    if (err) {
+      console.error('Error deleting user:', err);
+      return res.status(500).json({ message: 'Error deleting user' });
+    }
+
+    res.json({ success: true, message: 'User deleted successfully' });
+  });
+});
 
 app.get('/api/user-info', isAuthenticated, (req, res) => {
   if (!req.session.userId) {
@@ -148,6 +224,45 @@ app.get('/api/user-info', isAuthenticated, (req, res) => {
   });
 });
 
+// Route for searching users by name
+app.get('/api/search-users', isAuthenticated, checkRole(['admin']), (req, res) => {
+  const searchTerm = req.query.searchTerm; // Get search term from query parameters
+
+  // Ensure the searchTerm is provided
+  if (!searchTerm) {
+    return res.status(400).json({ message: 'Search term is required' });
+  }
+
+  // Search users by name
+  db.searchUsersByName(searchTerm, (err, users) => {
+    if (err) {
+      console.error('Error searching users:', err);
+      return res.status(500).json({ message: 'Error searching users' });
+    }
+
+    res.json(users); // Return the users found
+  });
+});
+
+// Route for getting users by role
+app.get('/api/users-by-role', isAuthenticated, checkRole(['admin']), (req, res) => {
+  const filterName = req.query.role; // Get role from query parameters
+
+  // Ensure the role is provided
+  if (!filterName) {
+    return res.status(400).json({ message: 'Role is required' });
+  }
+
+  // Get users by role
+  db.getUsersByRole(filterName, (err, users) => {
+    if (err) {
+      console.error('Error getting users by role:', err);
+      return res.status(500).json({ message: 'Error fetching users by role' });
+    }
+
+    res.json(users); // Return users with the specified role
+  });
+});
 
 
 
@@ -158,25 +273,6 @@ app.get('/test-session', (req, res) => {
   } else {
     res.send('Not logged in');
   }
-});
-
-// Temporary test route
-app.get('/test-protected', (req, res) => {
-  if (req.session.userId) {
-    res.send('You are authorized to view this content.');
-  } else {
-    res.status(401).send('Unauthorized: Please log in.');
-  }
-});
-
-// Temporary logout route
-app.get('/test-logout', (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      return res.status(500).send('Logout failed');
-    }
-    res.send('Logged out successfully');
-  });
 });
 
 

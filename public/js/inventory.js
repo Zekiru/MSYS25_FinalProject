@@ -33,12 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     enableAddItems();
 });
 
-logoutButton.addEventListener('click', async () => {
-    const response = await fetch('/logout', { method: 'POST' });
-    if (response.ok) window.location.href = '/';
-    else alert('Logout failed');
-});
-
 searchInput.addEventListener('input', () => updateTable());
 
 function updateUser() {
