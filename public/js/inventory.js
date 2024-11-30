@@ -107,6 +107,7 @@ function loadTable(data) {
             // Add event listener for clicking a row
             row.addEventListener('click', () => {
                 loadItemCard(item); // Populate the popup
+                populateFormForUpdate(item);
                 showPopUp(popup);    // Show the popup
             });
         });
@@ -229,6 +230,7 @@ function enablePopUpActions() {
     const updateButton = document.getElementById("updateButton");
     const deleteButton = document.getElementById("deleteButton");
     const closeButton = document.getElementById("closeButton");
+    const itemPopup = document.getElementById("itemPopup");
 
     // Update item action
     updateButton.addEventListener('click', () => {
@@ -236,8 +238,8 @@ function enablePopUpActions() {
         if (!itemId) return;
 
         // Logic to update item (for example, redirect to edit page or open a form)
-        console.log(`Updating item with ID: ${itemId}`);
-        closePopUp(popup); // Close popup after updating (or after redirect)
+        closePopUp(popup);
+        showPopUp(itemPopup);
     });
 
     // Delete item action
@@ -257,12 +259,13 @@ function enablePopUpActions() {
 // Enable Add Item functionality
 function enableAddItems() {
     const addItemButton = document.getElementById("addItemButton");
-    const addItemPopup = document.getElementById("addItemPopup");
-    const addCloseButton = document.getElementById("addCloseButton");
-    const addItemForm = document.getElementById("addItemForm");
+    const addItemPopup = document.getElementById("itemPopup");
+    const addCloseButton = document.getElementById("formCloseButton");
+    const addItemForm = document.getElementById("itemForm");
 
     // Show Add Item pop-up
     addItemButton.addEventListener("click", () => {
+        prepareFormForAdd();
         showPopUp(addItemPopup);
     });
 
@@ -275,6 +278,77 @@ function enableAddItems() {
     addItemForm.addEventListener("submit", (e) => {
         e.preventDefault();
     
-        addItem();
+        handleItemForm();
     });
 }
+
+async function handleItemForm() {
+    const itemPopup = document.getElementById("itemPopup");
+    const id = document.getElementById('itemId').value;
+    const name = document.getElementById('itemName').value;
+    const status = document.getElementById('itemStatus').value;
+    const quantity = document.getElementById('itemQuantity').value;
+    const description = document.getElementById('itemDescription').value;
+    const location = document.getElementById('itemLocation').value;
+  
+    const itemData = { name, status, quantity, description, location };
+  
+    try {
+        let response;
+        if (id) {
+            // Update item if ID is provided
+            response = await fetch(`/api/update-item/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(itemData),
+            });
+        } else {
+            // Add item if no ID is provided
+            response = await fetch('/api/add-item', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(itemData),
+            });
+        }
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            // alert(id ? 'Item updated successfully' : 'Item added successfully');
+            clearForm();
+        } else {
+            alert(data.message);
+        }
+    } catch (err) {
+        console.error('Error handling form:', err);
+        alert('Failed to process the form');
+    }
+
+    updateTable();
+    closePopUp(itemPopup);
+}
+  
+function clearForm() {
+    document.getElementById('itemForm').reset();
+    document.getElementById('itemId').value = ''; // Clear hidden ID field
+}
+
+// Example: Pre-fill the form for updating an item
+function populateFormForUpdate(item) {
+    document.getElementById('itemHeader').textContent = 'Update Item';
+    document.getElementById('itemId').value = item.id;
+    document.getElementById('itemName').value = item.name;
+    document.getElementById('itemStatus').value = item.status;
+    document.getElementById('itemQuantity').value = item.quantity;
+    document.getElementById('itemDescription').value = item.description;
+    document.getElementById('itemLocation').value = item.location;
+    document.getElementById('formSubmitButton').textContent = 'Update'; // Update button label
+}
+
+// Reset form to add mode
+function prepareFormForAdd() {
+    clearForm();
+    document.getElementById('itemHeader').textContent = 'Create Item';
+    document.getElementById('formSubmitButton').textContent = 'Create'; // Reset button label
+}
+  

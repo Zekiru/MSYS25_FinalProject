@@ -57,33 +57,38 @@
             </ul>
             <h4>Description</h4>
             <p id="description"></p>
-            <button id="updateButton">Update</button>
-            <button id="deleteButton">Delete</button>
-            <button id="closeButton">Close</button>
+            <div class="buttonSet">
+                <button id="updateButton">Update</button>
+                <button id="deleteButton">Delete</button>
+                <button id="closeButton">Close</button>
+            </div>
         </div>
     </div>
 
     <!-- Pop-up for adding items -->
-    <div id="addItemPopup" style="display: none;">
-        <div id="addItemContent">
-            <h2>Add New Item</h2>
-            <form id="addItemForm">
+    <div id="itemPopup" style="display: none;">
+        <div id="itemContent">
+            <h2 id="itemHeader"></h2>
+            <form id="itemForm">
+                <input type="hidden" id="itemId" name="id"> <!-- Used for updates -->
                 <label for="itemName">Item Name:</label>
-                <input type="text" id="itemName" name="itemName" required>
+                <input type="text" id="itemName" name="name" required>
                 <label for="itemStatus">Status:</label>
-                <select id="itemStatus" name="itemStatus" required>
+                <select id="itemStatus" name="status" required>
                     <option value="available">Available</option>
                     <option value="in-use">In-Use</option>
                     <option value="n/a">N/A</option>
                 </select>
                 <label for="itemQuantity">Quantity:</label>
-                <input type="number" id="itemQuantity" name="itemQuantity" min="1" required>
+                <input type="number" id="itemQuantity" name="quantity" min="1" required>
                 <label for="itemDescription">Description:</label>
-                <textarea id="itemDescription" name="itemDescription" class="description-input" placeholder="Enter description here..."></textarea>
+                <textarea id="itemDescription" name="description" class="description-input" placeholder="Enter description here..."></textarea>
                 <label for="itemLocation">Location:</label>
-                <input type="text" id="itemLocation" name="itemLocation" required>
-                <button type="submit">Add Item</button>
-                <button type="button" id="addCloseButton">Cancel</button>
+                <input type="text" id="itemLocation" name="location" required>
+                <div class="buttonSet">
+                    <button type="submit" id="formSubmitButton">Add Item</button>
+                    <button type="button" id="formCloseButton">Cancel</button>
+                </div>
             </form>
         </div>
     </div>

@@ -57,6 +57,17 @@ function createItem(newItem, callback) {
   executeQuery(query, [name, status, quantity, description, location], callback);
 }
 
+// Update an item in the inventory
+function updateItem(itemId, updatedItem, callback) {
+  const { name, status, quantity, description, location } = updatedItem;
+  const query = `
+    UPDATE inventory 
+    SET name = ?, status = ?, quantity = ?, description = ?, location = ?
+    WHERE id = ?`;
+  
+  executeQuery(query, [name, status, quantity, description, location, itemId], callback);
+}
+
 // Delete an item from the inventory
 function deleteItem(itemId, callback) {
   executeQuery('DELETE FROM inventory WHERE id = ?', [itemId], callback);
@@ -98,6 +109,7 @@ module.exports = {
   getItemById,
   checkItemExists,
   createItem,
+  updateItem,
   deleteItem,
   getUserById,
   createUser,

@@ -49,12 +49,7 @@ button:hover {
     color: rgb(62, 77, 78);
 }
 
-#addItemButton:hover {
-    background-color: #4ec54a;
-    color: #f2f2f2;
-}
-
-#updateButton:hover {
+#addItemButton:hover, #updateButton:hover, #formSubmitButton:hover {
     background-color: #4ec54a;
     color: #f2f2f2;
 }
@@ -64,7 +59,7 @@ button:hover {
     color: #f2f2f2;
 }
 
-#closeButton:hover {
+#closeButton:hover, #formCloseButton:hover {
     background-color: #2e547a;
     color: #f2f2f2;
 }
@@ -238,8 +233,17 @@ table tr:hover {
     color: #b31b1b;
 }
 
+.buttonSet {
+    width: fit-content;
+    /* display: flex;
+    flex-direction: row; */
+    align-items: center;
+    padding: 0;
+    margin: 0 auto;
+}
+
 /* Pop-up Styling */
-#popup, #addItemPopup {
+#popup, #itemPopup {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -253,12 +257,12 @@ table tr:hover {
     z-index: 1000;
 }
 
-#popup h2, #addItemPopup h2 {
+#popup h2, #itemPopup h2 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
 }
 
-#popup button, #addItemPopup button {
+#popup button, #itemPopup button {
     margin: 0.5rem;
     padding: 0.5rem 1rem;
     font-size: 1rem;

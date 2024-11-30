@@ -236,6 +236,24 @@ app.post('/api/add-item', isAuthenticated, (req, res) => {
   });
 });
 
+app.put('/api/update-item/:id', isAuthenticated, (req, res) => {
+  const itemId = req.params.id;
+  const { name, status, quantity, description, location } = req.body;
+
+  if (!name || !status || !quantity || !location) {
+    return res.status(400).json({ success: false, message: 'All fields are required' });
+  }
+
+  const updatedItem = { name, status, quantity, description, location };
+
+  db.updateItem(itemId, updatedItem, (err, result) => {
+    if (err) {
+      console.error('Error updating item:', err);
+      return res.status(500).json({ success: false, message: 'Error updating item' });
+    }
+    res.json({ success: true, message: 'Item updated successfully' });
+  });
+});
 
 app.delete('/api/delete-item/:id', isAuthenticated, (req, res) => {
   const itemId = req.params.id;
