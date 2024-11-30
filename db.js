@@ -50,6 +50,25 @@ function checkItemExists(name, status, location, callback) {
   });
 }
 
+function checkItemExistsExcludingCurrent(name, status, location, itemId, callback) {
+  const query = `
+    SELECT 1 FROM inventory 
+    WHERE name = ? AND status = ? AND location = ? AND id != ?
+    LIMIT 1
+  `;
+  
+  // Assuming you have a MySQL connection established (db.connection)
+  executeQuery(query, [name, status, location, itemId], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      return callback(err);
+    }
+
+    // If results length is greater than 0, it means an item with the same attributes exists
+    callback(null, results.length > 0); // Returns true if a match is found
+  });
+}
+
 // Add a new item to the inventory
 function createItem(newItem, callback) {
   const { name, status, quantity, description, location } = newItem;
@@ -66,6 +85,122 @@ function updateItem(itemId, updatedItem, callback) {
     WHERE id = ?`;
   
   executeQuery(query, [name, status, quantity, description, location, itemId], callback);
+}
+
+// Split and transfer an item
+function splitAndTransferItem(originalId, newItem, transferQuantity, callback) {
+  const checkExistQuery = 'SELECT * FROM inventory WHERE name = ? AND status = ? AND location = ?';
+  const getOriginalQuery = 'SELECT quantity FROM inventory WHERE id = ?';
+  const updateExistingQuery = 'UPDATE inventory SET quantity = quantity + ? WHERE id = ?';
+  const deleteOriginalQuery = 'DELETE FROM inventory WHERE id = ?';
+  const updateOriginalQuery = 'UPDATE inventory SET quantity = quantity - ? WHERE id = ?';
+  const createNewQuery = 'INSERT INTO inventory (name, status, quantity, description, location) VALUES (?, ?, ?, ?, ?)';
+
+  pool.getConnection((err, connection) => {
+    if (err) return callback(err);
+
+    connection.beginTransaction(err => {
+      if (err) {
+        connection.release();
+        return callback(err);
+      }
+
+      // Step 1: Get the original item's quantity
+      connection.query(getOriginalQuery, [originalId], (err, results) => {
+        if (err || results.length === 0) {
+          return connection.rollback(() => {
+            connection.release();
+            callback(err || new Error('Original item not found'));
+          });
+        }
+
+        const originalQuantity = results[0].quantity;
+
+        if (transferQuantity === originalQuantity) {
+          // Step 2: If transfer quantity matches original, delete the original item
+          connection.query(deleteOriginalQuery, [originalId], (err) => {
+            if (err) {
+              return connection.rollback(() => {
+                connection.release();
+                callback(err);
+              });
+            }
+
+            // Step 3: Handle the destination item (update existing or create new)
+            handleDestinationItem(connection, newItem, transferQuantity, (err, result) => {
+              if (err) {
+                return connection.rollback(() => {
+                  connection.release();
+                  callback(err);
+                });
+              }
+
+              connection.commit(err => {
+                connection.release();
+                if (err) return callback(err);
+                callback(null, { deleted: true, ...result });
+              });
+            });
+          });
+        } else {
+          // Step 2: Update the original item's quantity
+          connection.query(updateOriginalQuery, [transferQuantity, originalId], (err) => {
+            if (err) {
+              return connection.rollback(() => {
+                connection.release();
+                callback(err);
+              });
+            }
+
+            // Step 3: Handle the destination item (update existing or create new)
+            handleDestinationItem(connection, newItem, transferQuantity, (err, result) => {
+              if (err) {
+                return connection.rollback(() => {
+                  connection.release();
+                  callback(err);
+                });
+              }
+
+              connection.commit(err => {
+                connection.release();
+                if (err) return callback(err);
+                callback(null, { updatedOriginal: true, ...result });
+              });
+            });
+          });
+        }
+      });
+    });
+  });
+
+  // Helper function to handle destination item logic
+  function handleDestinationItem(connection, newItem, transferQuantity, callback) {
+    const { name, status, location, description } = newItem;
+
+    connection.query(checkExistQuery, [name, status, location], (err, results) => {
+      if (err) return callback(err);
+
+      const existingItem = results[0];
+
+      if (existingItem) {
+        // Update existing item's quantity
+        connection.query(updateExistingQuery, [transferQuantity, existingItem.id], (err) => {
+          if (err) return callback(err);
+          callback(null, { updated: true });
+        });
+      } else {
+        // Create new item
+        connection.query(
+          createNewQuery,
+          [name, status, transferQuantity, description, location],
+          (err, result) => {
+            if (err) return callback(err);
+            callback(null, { created: true });
+          }
+        );
+      }
+    });
+  }
 }
 
 // Delete an item from the inventory
@@ -108,8 +243,10 @@ module.exports = {
   searchItemsByName,
   getItemById,
   checkItemExists,
+  checkItemExistsExcludingCurrent,
   createItem,
   updateItem,
+  splitAndTransferItem,
   deleteItem,
   getUserById,
   createUser,

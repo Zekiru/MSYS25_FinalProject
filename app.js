@@ -223,7 +223,7 @@ app.post('/api/add-item', isAuthenticated, (req, res) => {
     }
 
     if (exists) {
-      return res.status(400).json({ success: false, message: 'Item with the same name, status, and location already exists' });
+      return res.status(400).json({ success: false, message: 'Item with the same attributes already exists' });
     }
 
     db.createItem(newItem, (err, result) => {
@@ -244,14 +244,65 @@ app.put('/api/update-item/:id', isAuthenticated, (req, res) => {
     return res.status(400).json({ success: false, message: 'All fields are required' });
   }
 
-  const updatedItem = { name, status, quantity, description, location };
-
-  db.updateItem(itemId, updatedItem, (err, result) => {
+  // Fetch the current item from the database to compare its current attributes
+  db.getItemById(itemId, (err, currentItem) => {
     if (err) {
-      console.error('Error updating item:', err);
-      return res.status(500).json({ success: false, message: 'Error updating item' });
+      console.error('Error fetching current item:', err);
+      return res.status(500).json({ success: false, message: 'Error fetching current item' });
     }
-    res.json({ success: true, message: 'Item updated successfully' });
+
+    // Check if the attributes in the request match the current item attributes
+    if (
+      name === currentItem.name &&
+      status === currentItem.status &&
+      location === currentItem.location &&
+      quantity === currentItem.quantity &&
+      description === currentItem.description
+    ) {
+      // If the attributes haven't changed, skip the update and return success
+      return res.json({ success: true, message: 'No changes detected, update skipped' });
+    }
+
+    const updatedItem = { name, status, quantity, description, location };
+
+    // Check if an item with the same attributes (name, status, location) already exists, excluding the current item
+    db.checkItemExistsExcludingCurrent(name, status, location, itemId, (err, exists) => {
+      if (err) {
+        console.error('Error checking for duplicates:', err);
+        return res.status(500).json({ success: false, message: 'Error checking for duplicates' });
+      }
+
+      if (exists) {
+        return res.status(400).json({ success: false, message: 'Item with the same attributes already exists' });
+      }
+
+      // Proceed with updating the item if no duplicate is found
+      db.updateItem(itemId, updatedItem, (err, result) => {
+        if (err) {
+          console.error('Error updating item:', err);
+          return res.status(500).json({ success: false, message: 'Error updating item' });
+        }
+        res.json({ success: true, message: 'Item updated successfully' });
+      });
+    });
+  });
+});
+
+// POST endpoint to split and transfer an item
+app.post('/api/split-transfer-item', (req, res) => {
+  const { originalId, newItem, transferQuantity } = req.body;
+
+  // Input validation
+  if (!originalId || !newItem || !transferQuantity) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  db.splitAndTransferItem(originalId, newItem, transferQuantity, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    res.status(200).json({ success: true, result });
   });
 });
 

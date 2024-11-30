@@ -59,6 +59,7 @@
             <p id="description"></p>
             <div class="buttonSet">
                 <button id="updateButton">Update</button>
+                <button id="transferButton">Transfer</button>
                 <button id="deleteButton">Delete</button>
                 <button id="closeButton">Close</button>
             </div>
@@ -81,7 +82,7 @@
                 </select>
                 <label for="itemQuantity">Quantity:</label>
                 <input type="number" id="itemQuantity" name="quantity" min="1" required>
-                <label for="itemDescription">Description:</label>
+                <label id="itemDescriptionLabel" for="itemDescription">Description:</label>
                 <textarea id="itemDescription" name="description" class="description-input" placeholder="Enter description here..."></textarea>
                 <label for="itemLocation">Location:</label>
                 <input type="text" id="itemLocation" name="location" required>
