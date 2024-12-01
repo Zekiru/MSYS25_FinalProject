@@ -30,26 +30,23 @@ const itemLocationLabel = document.getElementById('itemLocationLabel');
 const itemDescriptionLabel = document.getElementById('itemDescriptionLabel');
 const overlay = document.getElementById("overlay");
 
-// Event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    updateTable();
     updateUser();
+    updateTable();
     enablePopUpActions();
     enableAddItems();
+    enableEventListeners();
+});
 
-    // Initialize elements
-    const searchInput = document.getElementById('search-bar');
-    const searchByDropdown = document.getElementById('searchBy');
-    const statusFilters = document.querySelectorAll('.status-filter');
-
+function enableEventListeners() {
     // Add event listeners
-    searchInput.addEventListener('input', updateTable);  // Notice no parentheses here
-    searchByDropdown.addEventListener('change', updateTable);  // Same here
+    searchInput.addEventListener('input', updateTable);
+    searchByDropdown.addEventListener('change', updateTable);
 
     statusFilters.forEach(filter => {
-        filter.addEventListener('change', updateTable);  // And here as well
+        filter.addEventListener('change', updateTable);
     });
-});
+}
 
 function updateUser() {
     fetch('/api/user-info')
@@ -115,23 +112,26 @@ function updateTable() {
 }
 
 function loadTable(data) {
-    if (!data) return;
     tableBody.innerHTML = '';
-    data.forEach(item => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="${item.status === 'available' ? 'green' : item.status === 'in-use' ? 'red' : ''}">${item.status.toUpperCase()}</td>
-            <td>${item.name}</td>
-            <td>${item.quantity}</td>
-            <td>${item.location}</td>
-        `;
-        row.addEventListener('click', () => {
-            loadItemCard(item);
-            populateFormForUpdate(item);
-            showPopUp(popup);
+    try {
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="${item.status === 'available' ? 'green' : item.status === 'in-use' ? 'red' : ''}">${item.status.toUpperCase()}</td>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${item.location}</td>
+            `;
+            row.addEventListener('click', () => {
+                loadItemCard(item);
+                populateFormForUpdate(item);
+                showPopUp(popup);
+            });
+            tableBody.appendChild(row);
         });
-        tableBody.appendChild(row);
-    });
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 function loadItemCard(item) {
@@ -169,35 +169,6 @@ function deleteItem(itemId) {
                 console.error(error);
                 alert('An error occurred while deleting the item');
             });
-    }
-}
-
-async function addItem() {
-    const itemData = {
-        name: itemNameField.value,
-        status: itemStatusField.value,
-        quantity: itemQuantityField.value,
-        description: itemDescriptionField.value,
-        location: itemLocationField.value
-    };
-
-    try {
-        const response = await fetch('/api/add-item', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(itemData),
-        });
-        const data = await response.json();
-        if (data.success) {
-            updateTable();
-            closePopUp(addItemPopup);
-            addItemForm.reset();
-        } else {
-            alert(data.message);
-        }
-    } catch (error) {
-        console.error(error);
-        alert('An error occurred while adding the item.');
     }
 }
 

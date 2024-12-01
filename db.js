@@ -259,9 +259,9 @@ function getUserById(userId, callback) {
   });
 }
 
-function createUser(username, hashedPassword, callback) {
-  const query = 'INSERT INTO users (username, password) VALUES (?, ?)';
-  executeQuery(query, [username, hashedPassword], callback);
+function createUser(username, hashedPassword, role, callback) {
+  const query = 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)';
+  executeQuery(query, [username, hashedPassword, role], callback);
 }
 
 function getUserByUsername(username, callback) {
@@ -275,18 +275,13 @@ function updateUser(userId, updatedUser, callback) {
 
   // If a password is provided, hash it and update it
   if (password) {
-    bcrypt.hash(password, 10, (err, hashedPassword) => {
-      if (err) {
-        return callback(err);
-      }
-      query += ', password = ?';
-      params.push(hashedPassword);
+    query += ', password = ?';
+    params.push(password);
 
-      query += ' WHERE id NOT IN (1, 2) AND id = ?';
-      params.push(userId);
+    query += ' WHERE id NOT IN (1, 2) AND id = ?';
+    params.push(userId);
 
-      executeQuery(query, params, callback);
-    });
+    executeQuery(query, params, callback);
   } else {
     query += ' WHERE id NOT IN (1, 2) AND id = ?';
     params.push(userId);
@@ -301,18 +296,18 @@ function deleteUser(userId, callback) {
 }
 
 function getUsers(callback) {
-  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2)';
+  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2) ORDER BY GREATEST(created_at, updated_at) DESC';
   executeQuery(query, [], callback);
 }
 
 function searchUsersByName(searchTerm, callback) {
-  const query = 'SELECT * FROM users WHERE id NOT IN (1, 2) AND username LIKE ?';
+  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2) AND username LIKE ? ORDER BY GREATEST(created_at, updated_at) DESC';
   const searchQuery = `%${searchTerm}%`; // Wrap search term with '%' for partial match
   executeQuery(query, [searchQuery], callback);
 }
 
 function getUsersByRole(filterName, callback) {
-  const query = 'SELECT * FROM users WHERE id NOT IN (1, 2) AND role = ?';
+  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2) AND role = ? ORDER BY GREATEST(created_at, updated_at) DESC';
   executeQuery(query, [filterName], callback);
 }
 

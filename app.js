@@ -41,10 +41,10 @@ app.get('/manageusers', isAuthenticated, (req, res) => {
 
 
 app.post('/register', isAuthenticated, checkRole(['admin']), async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, role } = req.body;
 
   // Validate input
-  if (!username || !password) {
+  if (!username || !password || !role) {
     return res.status(400).json({ success: false, message: 'Username and password are required.' });
   }
 
@@ -64,7 +64,7 @@ app.post('/register', isAuthenticated, checkRole(['admin']), async (req, res) =>
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Create the user
-      db.createUser(username, hashedPassword, (err, result) => {
+      db.createUser(username, hashedPassword, role, (err, result) => {
         if (err) {
           console.error('Error creating user:', err);
           return res.status(500).send('Error creating user');
@@ -133,7 +133,7 @@ function checkRole(allowedRoles) {
   };
 }
 
-// Route to get all users with their roles, excluding users with IDs 1 and 2
+// Route to get all users with their roles
 app.get('/api/users', isAuthenticated, checkRole(['admin']), (req, res) => {
   db.getUsers((err, users) => {
     if (err) {
@@ -143,84 +143,6 @@ app.get('/api/users', isAuthenticated, checkRole(['admin']), (req, res) => {
 
     // Return users with their roles only (excluding passwords)
     res.json({ users });
-  });
-});
-
-// Route for updating user account (including role)
-app.put('/api/update-user/:id', isAuthenticated, checkRole(['admin']), (req, res) => {
-  const userId = req.params.id;
-  const { username, password, role } = req.body;
-
-  // Check if username, password, and role are provided
-  if (!username || !password || !role) {
-    return res.status(400).json({ message: 'Username, password, and role are required' });
-  }
-
-  // Validate the role
-  const validRoles = ['reader', 'editor', 'admin'];
-  if (!validRoles.includes(role)) {
-    return res.status(400).json({ message: 'Invalid role' });
-  }
-
-  // Hash the new password
-  bcrypt.hash(password, 10, (err, hashedPassword) => {
-    if (err) {
-      console.error('Error hashing password:', err);
-      return res.status(500).json({ message: 'Server error' });
-    }
-
-    const updatedUser = { username, password: hashedPassword, role };
-
-    // Update the user in the database
-    db.updateUser(userId, updatedUser, (err, result) => {
-      if (err) {
-        console.error('Error updating user:', err);
-        return res.status(500).json({ message: 'Error updating user' });
-      }
-
-      res.json({ success: true, message: 'User updated successfully' });
-    });
-  });
-});
-
-// Route for deleting user account
-app.delete('/api/delete-user/:id', isAuthenticated, checkRole(['admin']), (req, res) => {
-  const userId = req.params.id;
-
-  // Ensure that the admin is not deleting their own account
-  if (req.session.userId == userId) {
-    return res.status(400).json({ message: 'Admin cannot delete their own account' });
-  }
-
-  // Delete the user from the database
-  db.deleteUser(userId, (err, result) => {
-    if (err) {
-      console.error('Error deleting user:', err);
-      return res.status(500).json({ message: 'Error deleting user' });
-    }
-
-    res.json({ success: true, message: 'User deleted successfully' });
-  });
-});
-
-app.get('/api/user-info', isAuthenticated, (req, res) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ message: 'Not logged in' });
-  }
-
-  // Assuming you store the username and role in the database
-  db.getUserById(req.session.userId, (err, user) => {
-    if (err) {
-      console.error('Error fetching user info:', err);
-      return res.status(500).json({ message: 'Server error' });
-    }
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Return the username and role in the response
-    res.json({ username: user.username, role: user.role });
   });
 });
 
@@ -261,6 +183,93 @@ app.get('/api/users-by-role', isAuthenticated, checkRole(['admin']), (req, res) 
     }
 
     res.json(users); // Return users with the specified role
+  });
+});
+
+// Route for updating user account (including role)
+app.put('/api/update-user/:id', isAuthenticated, checkRole(['admin']), (req, res) => {
+  const userId = req.params.id;
+  const { username, password, role } = req.body;
+
+  if (!username || !role) {
+    return res.status(400).json({ message: 'Username and role are required' });
+  }
+
+  const validRoles = ['reader', 'editor', 'admin'];
+  if (!validRoles.includes(role)) {
+    return res.status(400).json({ message: 'Invalid role' });
+  }
+
+  const updatedUser = { username, role };
+
+  if (password && password.trim() !== '') {
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+      if (err) {
+        console.error('Error hashing password:', err);
+        return res.status(500).json({ message: 'Server error' });
+      }
+
+      updatedUser.password = hashedPassword;
+
+      db.updateUser(userId, updatedUser, (err, result) => {
+        if (err) {
+          console.error('Error updating user:', err);
+          return res.status(500).json({ message: 'Error updating user' });
+        }
+
+        res.json({ success: true, message: 'User updated successfully' });
+      });
+    });
+  } else {
+    db.updateUser(userId, updatedUser, (err, result) => {
+      if (err) {
+        console.error('Error updating user:', err);
+        return res.status(500).json({ message: 'Error updating user' });
+      }
+
+      res.json({ success: true, message: 'User updated successfully' });
+    });
+  }
+});
+
+// Route for deleting user account
+app.delete('/api/delete-user/:id', isAuthenticated, checkRole(['admin']), (req, res) => {
+  const userId = req.params.id;
+
+  // Ensure that the admin is not deleting their own account
+  if (req.session.userId == userId) {
+    return res.status(400).json({ message: 'Admin cannot delete their own account' });
+  }
+
+  // Delete the user from the database
+  db.deleteUser(userId, (err, result) => {
+    if (err) {
+      console.error('Error deleting user:', err);
+      return res.status(500).json({ message: 'Error deleting user' });
+    }
+
+    res.json({ success: true, message: 'User deleted successfully' });
+  });
+});
+
+app.get('/api/user-info', isAuthenticated, (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ message: 'Not logged in' });
+  }
+
+  // Assuming you store the username and role in the database
+  db.getUserById(req.session.userId, (err, user) => {
+    if (err) {
+      console.error('Error fetching user info:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return the username and role in the response
+    res.json({ username: user.username, role: user.role });
   });
 });
 

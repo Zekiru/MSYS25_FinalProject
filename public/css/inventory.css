@@ -268,7 +268,7 @@ table tr:hover {
     font-size: 1rem;
 }
 
-form input, form textarea, #itemStatus {
+form input, form textarea, #itemStatus, #itemRole {
     margin: 0 0 2rem 0;
     width: 100%;                
     padding: 0.75rem;
@@ -365,6 +365,29 @@ button:disabled:hover {
 
 
 
+.edit-btn {
+    background-color: #cc8509;
+    color: #efefef;
+}
+
+.edit-btn:hover {
+    background-color: #cacaca;
+    color: #191919;
+}
+
+.delete-btn {
+    background-color: #b91010;
+    color: #efefef;
+}
+
+.delete-btn:hover {
+    background-color: #cacaca;
+    color: #b91010;
+}
+
+
+
+
 /* Media Queries */
 @media (max-width: 900px) {
     html, body {
@@ -393,7 +416,7 @@ button:disabled:hover {
         font-size: 0.8rem;
     }
 
-    #popup, #addItemPopup {
+    #popup, #itemPopup {
         width: 95%;
     }
 
