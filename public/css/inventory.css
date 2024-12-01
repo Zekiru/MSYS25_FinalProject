@@ -161,8 +161,8 @@ button:hover {
 
 .selection-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: left;
+    align-items: left;
     padding: 0.5rem;
     background-color: #f3f3f3;
 }
@@ -322,6 +322,55 @@ button:disabled:hover {
     background-color: #ccc !important;
     border: 1px solid #aaa !important;
 }
+
+
+
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin: auto 1rem;
+}
+
+#search-bar {
+    /* margin-right: 1rem; */
+    margin: auto 0;
+    width: 50%;
+    height: fit-content;
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.filter-select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.checkbox-option * {
+    cursor: pointer;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    white-space: nowrap;
+}
+
+.checkbox-option input {
+    transform: scale(1.5); 
+    margin-right: 0.5rem;
+}
+
+
+
 
 /* Media Queries */
 @media (max-width: 768px) {

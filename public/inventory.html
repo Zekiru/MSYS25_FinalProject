@@ -28,7 +28,29 @@
         <div class="selection-content data-table">
             <div class="selection-header">
                 <input type="text" id="search-bar" placeholder="Search...">
-                <div id="dataPagination" class="pagination"></div>
+                <div class="filter-container">
+                    <label for="searchBy" class="filter-label">Search By:</label>
+                    <select id="searchBy" class="filter-select">
+                        <option value="name">Name</option>
+                        <option value="location">Location</option>
+                    </select>
+                
+                    <div class="checkbox-group">
+                        <label for="statusFilter" class="filter-label">Show Only:</label>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="available" class="status-filter" value="available">
+                            <label for="available">AVAILABLE</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="inUse" class="status-filter" value="in-use">
+                            <label for="inUse">IN-USE</label>
+                        </div>
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="na" class="status-filter" value="n/a">
+                            <label for="na">N/A</label>
+                        </div>
+                    </div>
+                </div>                
             </div>
             <div id="dataScroll" class="table-scroll">
                 <table id="dataTable">
