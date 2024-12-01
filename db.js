@@ -23,16 +23,54 @@ function executeQuery(query, params = [], callback) {
   });
 }
 
-// Fetch all inventory items
-function getInventoryItems(callback) {
-  executeQuery('SELECT * FROM inventory', [], callback);
+// Fetch all inventory items with optional status filtering
+function getInventory(statusFilters, callback) {
+  let query = 'SELECT * FROM inventory ';
+  const queryParams = [];
+
+  // Add status filter condition if any
+  if (statusFilters && statusFilters.length > 0) {
+    const placeholders = statusFilters.map(() => '?').join(', ');
+    query += `WHERE status IN (${placeholders}) `;
+    queryParams.push(...statusFilters);
+  }
+
+  // Add sorting
+  query += 'ORDER BY GREATEST(created_at, updated_at) DESC';
+
+  executeQuery(query, queryParams, callback);
 }
 
-// Search for inventory items by name (partial match using LIKE)
-function searchItemsByName(searchTerm, callback) {
-  const query = 'SELECT * FROM inventory WHERE name LIKE ?';
-  const searchQuery = `%${searchTerm}%`; // Wrap search term with '%' for partial match
-  executeQuery(query, [searchQuery], callback);
+
+// Search for inventory items by Name OR Location with optional status filters
+function searchInventory({ searchTerm, searchBy, statusFilters }, callback) {
+  let query = 'SELECT * FROM inventory WHERE ';
+  const queryParams = [];
+
+  // If searchTerm is provided, add the search condition
+  if (searchTerm && searchTerm.length > 0) {
+    if (searchBy === 'name') {
+      query += 'name LIKE ? ';
+    } else if (searchBy === 'location') {
+      query += 'location LIKE ? ';
+    }
+    queryParams.push(`%${searchTerm}%`); // Wrap search term with '%' for partial match
+  } else {
+    // If no searchTerm, don't add a search condition
+    query += '1 ';  // "1" is a true condition that selects all rows
+  }
+
+  // Add status filter condition if any
+  if (statusFilters && statusFilters.length > 0) {
+    const placeholders = statusFilters.map(() => '?').join(', ');
+    query += `AND status IN (${placeholders}) `;
+    queryParams.push(...statusFilters);
+  }
+
+  // Add sorting
+  query += 'ORDER BY GREATEST(created_at, updated_at) DESC';
+
+  executeQuery(query, queryParams, callback);
 }
 
 // Fetch a specific item by ID
@@ -280,8 +318,8 @@ function getUsersByRole(filterName, callback) {
 
 
 module.exports = {
-  getInventoryItems,
-  searchItemsByName,
+  getInventory,
+  searchInventory,
   getItemById,
   checkItemExists,
   checkItemExistsExcludingCurrent,

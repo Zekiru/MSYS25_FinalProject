@@ -3,16 +3,14 @@ html, body {
     font-size: 1.15rem; /* Base font size */
     margin: 0; /* Removed margin for more control over spacing */
     padding: 0; /* Remove extra padding */
+    height: 100%;
+    overflow: auto;
 }
 
 body {
     background: linear-gradient(45deg, #000000 40%, #96760b 100%);
     /* background-color: #000; */
     background-repeat: no-repeat;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    overflow: auto;
 }
 
 #overlay {
@@ -40,7 +38,7 @@ button {
     border: none;
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
-    color: #0044a3;
+    color: #726005;
     background-color: #e3e8ec;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     cursor: pointer;
@@ -84,6 +82,7 @@ button:hover {
 
 .main-section h2 {
     margin: 0;
+    margin-top: 1.5vmin;
 }
 
 .main-section h2 a {
@@ -143,6 +142,7 @@ button:hover {
     align-items: flex-start;
     flex-wrap: wrap;
     width: calc(100% - 8vw);  /* Match width of top-menu */
+    height: 75vmin;
     margin: 0 auto;
 }
 
@@ -150,7 +150,7 @@ button:hover {
     display: flex;
     flex-direction: column;
     width: 100%;
-    height: 75vh;
+    height: 100%;
     max-width: 100%;
     border: 1px solid #dadada;
     border-radius: 1rem;
@@ -177,23 +177,14 @@ button:hover {
     border-radius: 0.8rem;
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.19);
 
-    width: 70%;
+    /* min-width: 50%; */
+    /* max-width: 100%; */
     font-size: 1rem;
     padding: 0.5rem;
 }
 
 #search-bar:focus {
     outline-color: #818181;
-}
-
-.pagination {
-    display: flex;
-    gap: 0.5rem;
-    font-size: 1rem;
-    overflow-x: auto;
-    justify-content: center;
-    width: 100%;
-    padding: 0.5rem 0;
 }
 
 .table-scroll {
@@ -330,13 +321,15 @@ button:disabled:hover {
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
-    margin: auto 1rem;
+    margin: auto;
 }
 
 #search-bar {
     /* margin-right: 1rem; */
     margin: auto 0;
-    width: 50%;
+    margin-right: 1rem;
+    min-width: 50%;
+    max-width: 70%;
     height: fit-content;
 }
 
@@ -359,9 +352,9 @@ button:disabled:hover {
 
 .checkbox-group {
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    white-space: nowrap;
+    flex-wrap: wrap;
+    align-items: left;
+    gap: 0.8rem;
 }
 
 .checkbox-option input {
@@ -373,7 +366,7 @@ button:disabled:hover {
 
 
 /* Media Queries */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     html, body {
         font-size: 0.9rem;
     }
@@ -389,6 +382,7 @@ button:disabled:hover {
 
     .selection-container {
         padding: 0.5rem;
+        height: 70vh;
     }
 
     #search-bar {

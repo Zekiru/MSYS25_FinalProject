@@ -1,5 +1,6 @@
-// Define elements outside functions
 const searchInput = document.getElementById('search-bar');
+const searchByDropdown = document.getElementById('searchBy');
+const statusFilters = document.querySelectorAll('.status-filter');
 const logoutButton = document.getElementById('logoutButton');
 const addItemButton = document.getElementById("addItemButton");
 const addItemForm = document.getElementById("itemForm");
@@ -19,9 +20,13 @@ const itemIdField = document.getElementById('itemId');
 const itemNameField = document.getElementById('itemName');
 const itemStatusField = document.getElementById('itemStatus');
 const itemQuantityField = document.getElementById('itemQuantity');
-const itemDescriptionField = document.getElementById('itemDescription');
 const itemLocationField = document.getElementById('itemLocation');
+const itemDescriptionField = document.getElementById('itemDescription');
 const formSubmitButton = document.getElementById('formSubmitButton');
+const itemNameLabel = document.getElementById('itemNameLabel');
+const itemStatusLabel = document.getElementById('itemStatusLabel');
+const itemQuantityLabel = document.getElementById('itemQuantityLabel');
+const itemLocationLabel = document.getElementById('itemLocationLabel');
 const itemDescriptionLabel = document.getElementById('itemDescriptionLabel');
 const overlay = document.getElementById("overlay");
 
@@ -31,9 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUser();
     enablePopUpActions();
     enableAddItems();
-});
 
-searchInput.addEventListener('input', () => updateTable());
+    // Initialize elements
+    const searchInput = document.getElementById('search-bar');
+    const searchByDropdown = document.getElementById('searchBy');
+    const statusFilters = document.querySelectorAll('.status-filter');
+
+    // Add event listeners
+    searchInput.addEventListener('input', updateTable);  // Notice no parentheses here
+    searchByDropdown.addEventListener('change', updateTable);  // Same here
+
+    statusFilters.forEach(filter => {
+        filter.addEventListener('change', updateTable);  // And here as well
+    });
+});
 
 function updateUser() {
     fetch('/api/user-info')
@@ -67,8 +83,31 @@ function updateUser() {
 }
 
 function updateTable() {
-    const input = searchInput.value;
-    const url = input.length < 3 ? '/api/inventory' : `/api/search-items?query=${input}`;
+    const input = searchInput.value.trim();
+    const searchBy = document.getElementById('searchBy').value;
+    const statuses = Array.from(document.querySelectorAll('.status-filter:checked'))
+        .map(checkbox => checkbox.value)
+        .join(',');
+
+    // Default to the inventory route
+    let url = '/api/inventory';
+
+    const queryParams = [];
+
+    if (input.length >= 1) {
+        url = '/api/search-inventory';  // Switch to the search API
+        queryParams.push(`query=${encodeURIComponent(input)}`);
+        queryParams.push(`searchBy=${encodeURIComponent(searchBy)}`);
+    }
+
+    if (statuses) {
+        queryParams.push(`statuses=${encodeURIComponent(statuses)}`);
+    }
+
+    if (queryParams.length > 0) {
+        url += `?${queryParams.join('&')}`;
+    }
+
     fetch(url)
         .then(response => response.json())
         .then(loadTable)
@@ -76,6 +115,7 @@ function updateTable() {
 }
 
 function loadTable(data) {
+    if (!data) return;
     tableBody.innerHTML = '';
     data.forEach(item => {
         const row = document.createElement('tr');
@@ -256,6 +296,14 @@ function clearForm() {
     itemIdField.value = '';
 }
 
+function showHiddenInputs() {
+    itemNameLabel.removeAttribute('hidden');
+    itemNameField.removeAttribute('hidden');
+    itemDescriptionLabel.removeAttribute('hidden');
+    itemDescriptionField.removeAttribute('hidden');
+    itemQuantityField.removeAttribute('max');
+}
+
 function populateFormForUpdate(item) {
     itemHeader.textContent = 'Update Item';
     itemIdField.value = item.id;
@@ -265,25 +313,43 @@ function populateFormForUpdate(item) {
     itemDescriptionField.value = item.description;
     itemLocationField.value = item.location;
     formSubmitButton.textContent = 'Update';
-    itemDescriptionLabel.removeAttribute('hidden');
-    itemDescriptionField.removeAttribute('hidden');
-    itemQuantityField.removeAttribute('max');
+
+    itemNameLabel.textContent = 'Change Name:';
+    itemStatusLabel.textContent = `Change Status (${item.status.toUpperCase()}):`;
+    itemQuantityLabel.textContent = `Change Quantity (${item.quantity}):`;
+    itemLocationLabel.textContent = `Change Location:`;
+    itemDescriptionLabel.textContent = `Change Description:`;
+
+    showHiddenInputs();
 }
 
 function prepareFormForAdd() {
     clearForm();
     itemHeader.textContent = 'Create Item';
     formSubmitButton.textContent = 'Create';
-    itemDescriptionLabel.removeAttribute('hidden');
-    itemDescriptionField.removeAttribute('hidden');
-    itemQuantityField.removeAttribute('max');
+
+    itemNameLabel.textContent = 'Name:';
+    itemStatusLabel.textContent = 'Status:';
+    itemQuantityLabel.textContent = 'Quantity:';
+    itemLocationLabel.textContent = 'Location:';
+    itemDescriptionLabel.textContent = 'Description:';
+
+    showHiddenInputs();
 }
 
 function prepareFormForTransfer() {
-    itemHeader.textContent = 'Transfer Item/s';
+    itemHeader.textContent = `${itemNameField.value}`;
     formSubmitButton.textContent = 'Transfer';
+
+    itemStatusLabel.textContent = `Change Status (${itemStatusField.value.toUpperCase()}):`;
+    itemQuantityLabel.textContent = `Transfer Quantity (${itemQuantityField.value} Max):`;
+    itemLocationLabel.textContent = `Change Location:`;
+
+    itemNameLabel.setAttribute('hidden', true);
+    itemNameField.setAttribute('hidden', true);
     itemDescriptionLabel.setAttribute('hidden', true);
     itemDescriptionField.setAttribute('hidden', true);
+
     itemQuantityField.setAttribute('max', itemQuantityField.value);
 }
 

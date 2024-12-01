@@ -279,41 +279,44 @@ app.get('/test-session', (req, res) => {
 
 // Protected inventory routes
 app.get('/api/inventory', isAuthenticated, (req, res) => {
-  db.getInventoryItems((err, items) => {
+  const { statuses } = req.query;  // Extract 'statuses' query parameter if it exists
+
+  // Parse statuses into an array if provided
+  const statusFilters = statuses ? statuses.split(',') : [];
+
+  // Fetch inventory items with optional status filters
+  db.getInventory(statusFilters, (err, items) => {
     if (err) {
       console.error('Error fetching inventory items:', err);
       return res.status(500).send('Error fetching data');
     }
-    res.json(items);
-  });
-});
-
-// Route to search inventory items by name (partial match)
-app.get('/api/search-items', isAuthenticated, (req, res) => {
-  const { query } = req.query; // Get search term from query parameter
-
-  if (!query) {
-    return res.status(400).json({ success: false, message: 'Query parameter is required' });
-  }
-
-  db.searchItemsByName(query, (err, items) => {
-    if (err) {
-      console.error('Error searching items:', err);
-      return res.status(500).send('Error searching items');
-    }
-
     res.json(items); // Send matching items as a JSON response
   });
 });
 
-app.get('/api/inventory/:id', isAuthenticated, (req, res) => {
-  const itemId = req.params.id;
-  db.getItemById(itemId, (err, item) => {
+// Route to search inventory items
+app.get('/api/search-inventory', isAuthenticated, (req, res) => {
+  const { query, searchBy, statuses } = req.query; // Extract query, searchBy, and statuses from query parameters
+
+  // Validate required parameters
+  if (!query || !searchBy) {
+    return res.status(400).json({
+      success: false,
+      message: 'Query and searchBy parameters are required',
+    });
+  }
+
+  // Parse statuses into an array if provided
+  const statusFilters = statuses ? statuses.split(',') : [];
+
+  // Search inventory items using the modified function
+  db.searchInventory({ searchTerm: query, searchBy, statusFilters }, (err, items) => {
     if (err) {
-      console.error('Error fetching item:', err);
-      return res.status(500).send('Error fetching item data');
+      console.error('Error searching inventory:', err);
+      return res.status(500).send('Error searching inventory');
     }
-    res.json(item);
+
+    res.json(items); // Send matching items as a JSON response
   });
 });
 
