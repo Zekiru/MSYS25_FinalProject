@@ -162,7 +162,7 @@ app.get('/api/search-users', isAuthenticated, checkRole(['admin']), (req, res) =
       return res.status(500).json({ message: 'Error searching users' });
     }
 
-    res.json(users); // Return the users found
+    res.json({ users }); // Return the users found
   });
 });
 
