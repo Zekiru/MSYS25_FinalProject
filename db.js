@@ -1,5 +1,4 @@
 const mysql = require('mysql2');
-const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 // Create a MySQL connection pool
@@ -36,7 +35,7 @@ function getInventory(statusFilters, callback) {
   }
 
   // Add sorting
-  query += 'ORDER BY GREATEST(created_at, updated_at) DESC';
+  query += 'ORDER BY updated_at DESC';
 
   executeQuery(query, queryParams, callback);
 }
@@ -68,7 +67,7 @@ function searchInventory({ searchTerm, searchBy, statusFilters }, callback) {
   }
 
   // Add sorting
-  query += 'ORDER BY GREATEST(created_at, updated_at) DESC';
+  query += 'ORDER BY updated_at DESC';
 
   executeQuery(query, queryParams, callback);
 }
@@ -296,18 +295,18 @@ function deleteUser(userId, callback) {
 }
 
 function getUsers(callback) {
-  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2) ORDER BY GREATEST(created_at, updated_at) DESC';
+  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2) ORDER BY updated_at DESC';
   executeQuery(query, [], callback);
 }
 
 function searchUsersByName(searchTerm, callback) {
-  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2) AND username LIKE ? ORDER BY GREATEST(created_at, updated_at) DESC';
+  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2) AND username LIKE ? ORDER BY updated_at DESC';
   const searchQuery = `%${searchTerm}%`; // Wrap search term with '%' for partial match
   executeQuery(query, [searchQuery], callback);
 }
 
 function getUsersByRole(filterName, callback) {
-  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2) AND role = ? ORDER BY GREATEST(created_at, updated_at) DESC';
+  const query = 'SELECT id, username, role FROM users WHERE id NOT IN (1, 2) AND role = ? ORDER BY updated_at DESC';
   executeQuery(query, [filterName], callback);
 }
 
