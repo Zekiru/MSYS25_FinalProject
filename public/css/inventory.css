@@ -4,13 +4,15 @@ html, body {
     margin: 0; /* Removed margin for more control over spacing */
     padding: 0; /* Remove extra padding */
     height: 100%;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body {
     background: linear-gradient(45deg, #000000 40%, #96760b 100%);
     /* background-color: #000; */
     background-repeat: no-repeat;
+    /* min-height: 90%; */
 }
 
 #overlay {
@@ -142,7 +144,7 @@ button:hover {
     align-items: flex-start;
     flex-wrap: wrap;
     width: calc(100% - 8vw);  /* Match width of top-menu */
-    height: 75vmin;
+    height: calc(80vh - 4rem);
     margin: 0 auto;
 }
 
@@ -316,20 +318,25 @@ button:disabled:hover {
 
 
 
+.selection-header {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .filter-container {
     display: flex;
-    align-items: center;
+    align-items: left;
     gap: 1rem;
     flex-wrap: wrap;
-    margin: auto;
+    margin: 0.5rem 0.8rem;
 }
 
 #search-bar {
     /* margin-right: 1rem; */
     margin: auto 0;
-    margin-right: 1rem;
-    min-width: 50%;
-    max-width: 70%;
+    margin-right: 0.5rem;
+    min-width: 33%;
+    padding: 0.8rem;
     height: fit-content;
 }
 
@@ -352,8 +359,8 @@ button:disabled:hover {
 
 .checkbox-group {
     display: flex;
-    flex-wrap: wrap;
-    align-items: left;
+    flex-wrap: nowrap;
+    align-items: center;
     gap: 0.8rem;
 }
 
@@ -405,7 +412,7 @@ button:disabled:hover {
 
     .selection-container {
         padding: 0.5rem;
-        height: 70vh;
+        height: calc(65vh - 5rem);
     }
 
     #search-bar {
