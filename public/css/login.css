@@ -14,7 +14,8 @@ body {
     overflow: hidden;
 }
 p {
-    font-weight: bold;
+    font-size: 1.15rem;
+    /* font-weight: bold; */
     color: #f3f3f3;
     margin: 1rem 0;
 }
